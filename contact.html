@@ -29,7 +29,7 @@
       <div class="legal-note"><strong>Support Disclaimer</strong><p>MIT PRO support does not provide financial advice, trading advice, or guaranteed trading outcomes.</p></div>
       <h2>Support Request Template</h2>
       <p>When contacting support, include your account email, device details, and a short description of what you need help with.</p>
-      <form class="contact-form" action="mailto:support@mitpro.ai" method="post" enctype="text/plain">
+      <form class="contact-form" id="supportForm">
         <div class="contact-row">
           <input name="name" placeholder="Your name" aria-label="Your name">
           <input name="email" placeholder="Your email" aria-label="Your email">
@@ -37,10 +37,34 @@
         <input name="subject" placeholder="Subject" aria-label="Subject">
         <textarea name="message" placeholder="Message" aria-label="Message"></textarea>
         <button class="btn primary" type="submit">Send Email</button>
-        <div class="form-help">This opens your email app with a draft addressed to MIT PRO support.</div>
+        <div class="form-help" id="supportFormHelp">This opens your email app with a draft addressed to MIT PRO support.</div>
       </form>
     </section>
   </main>
   <footer class="site-shell footer"><div><span>&copy; 2026 MIT PRO. All rights reserved.</span><small>MIT PRO is not financial advice and does not guarantee trading results.</small></div><div class="footer-links"><a href="mailto:support@mitpro.ai">support@mitpro.ai</a><a href="privacy-policy.html">Privacy Policy</a><a href="terms-of-use.html">Terms of Use</a><a href="risk-disclaimer.html">Risk Disclaimer</a></div></footer>
+  <script>
+    const supportForm = document.getElementById("supportForm");
+    const supportFormHelp = document.getElementById("supportFormHelp");
+
+    supportForm?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = new FormData(supportForm);
+      const name = String(form.get("name") || "").trim();
+      const email = String(form.get("email") || "").trim();
+      const subject = String(form.get("subject") || "MIT PRO Support Request").trim();
+      const message = String(form.get("message") || "").trim();
+      const body = [
+        `Name: ${name || "-"}`,
+        `Email: ${email || "-"}`,
+        "",
+        "Message:",
+        message || "-"
+      ].join("\n");
+
+      const mailto = `mailto:support@mitpro.ai?subject=${encodeURIComponent(subject || "MIT PRO Support Request")}&body=${encodeURIComponent(body)}`;
+      supportFormHelp.textContent = "Opening your email app. If nothing opens, email support@mitpro.ai directly.";
+      window.location.href = mailto;
+    });
+  </script>
 </body>
 </html>
