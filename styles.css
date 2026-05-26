@@ -1263,6 +1263,15 @@ textarea {
   resize: vertical;
 }
 
+.contact-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .form-help {
   color: var(--muted);
   font-size: 0.9rem;
@@ -1296,6 +1305,22 @@ textarea {
   border-color: rgba(44, 255, 177, 0.55);
   background: linear-gradient(135deg, rgba(44, 255, 177, 0.16), rgba(102, 255, 240, 0.08));
   box-shadow: 0 0 24px rgba(44, 255, 177, 0.14), inset 0 0 24px rgba(44, 255, 177, 0.08);
+}
+
+.contact-status.bad {
+  border-color: rgba(255, 77, 109, 0.62);
+  background: linear-gradient(135deg, rgba(255, 77, 109, 0.14), rgba(255, 190, 92, 0.06));
+  box-shadow: 0 0 22px rgba(255, 77, 109, 0.12), inset 0 0 22px rgba(255, 77, 109, 0.06);
+}
+
+.contact-status.bad strong {
+  color: #ff7b91;
+}
+
+.contact-form button:disabled {
+  cursor: wait;
+  filter: grayscale(0.2);
+  opacity: 0.75;
 }
 
 @media (max-width: 1050px) {

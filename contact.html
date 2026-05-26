@@ -31,17 +31,18 @@
       <p>When contacting support, include your account email, device details, and a short description of what you need help with.</p>
       <form class="contact-form" id="supportForm">
         <div class="contact-row">
-          <input name="name" placeholder="Your name" aria-label="Your name">
-          <input name="email" placeholder="Your email" aria-label="Your email">
+          <input name="name" placeholder="Your name" aria-label="Your name" required>
+          <input name="email" type="email" placeholder="Your email" aria-label="Your email" required>
         </div>
-        <input name="subject" placeholder="Subject" aria-label="Subject">
-        <textarea name="message" placeholder="Message" aria-label="Message"></textarea>
-        <button class="btn primary" type="submit">Open Email Draft</button>
+        <input name="subject" placeholder="Subject" aria-label="Subject" required>
+        <textarea name="message" placeholder="Message" aria-label="Message" required></textarea>
+        <input class="contact-hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn primary" id="supportSubmit" type="submit">Send Message</button>
         <div class="contact-status" id="supportFormStatus" role="status" aria-live="polite">
-          <strong>Email draft mode</strong>
-          <span>This page prepares your message in your email app. Please press Send there to deliver it.</span>
+          <strong>Secure support request</strong>
+          <span>Your message will be sent directly to MIT PRO support.</span>
         </div>
-        <div class="form-help" id="supportFormHelp">No data is submitted through the website.</div>
+        <div class="form-help" id="supportFormHelp">You can also email support@mitpro.ai directly.</div>
       </form>
     </section>
   </main>
@@ -50,28 +51,56 @@
     const supportForm = document.getElementById("supportForm");
     const supportFormHelp = document.getElementById("supportFormHelp");
     const supportFormStatus = document.getElementById("supportFormStatus");
+    const supportSubmit = document.getElementById("supportSubmit");
 
-    supportForm?.addEventListener("submit", (event) => {
+    function setContactStatus(type, title, message) {
+      supportFormStatus?.classList.remove("active", "bad");
+      if (type) supportFormStatus?.classList.add(type);
+      supportFormStatus.querySelector("strong").textContent = title;
+      supportFormStatus.querySelector("span").textContent = message;
+    }
+
+    supportForm?.addEventListener("submit", async (event) => {
       event.preventDefault();
       const form = new FormData(supportForm);
       const name = String(form.get("name") || "").trim();
       const email = String(form.get("email") || "").trim();
       const subject = String(form.get("subject") || "MIT PRO Support Request").trim();
       const message = String(form.get("message") || "").trim();
-      const body = [
-        `Name: ${name || "-"}`,
-        `Email: ${email || "-"}`,
-        "",
-        "Message:",
-        message || "-"
-      ].join("\n");
+      const company = String(form.get("company") || "").trim();
 
-      const mailto = `mailto:support@mitpro.ai?subject=${encodeURIComponent(subject || "MIT PRO Support Request")}&body=${encodeURIComponent(body)}`;
-      supportFormStatus?.classList.add("active");
-      supportFormStatus.querySelector("strong").textContent = "Email draft prepared";
-      supportFormStatus.querySelector("span").textContent = "Your mail app should open now. Please review the draft and press Send inside your email app.";
-      supportFormHelp.textContent = "If no mail app opens, email support@mitpro.ai directly and include the details above.";
-      window.location.href = mailto;
+      if (!name || !email || !subject || !message) {
+        setContactStatus("bad", "Missing details", "Please complete all fields before sending.");
+        return;
+      }
+
+      supportSubmit.disabled = true;
+      supportSubmit.textContent = "Sending...";
+      supportFormHelp.textContent = "Please wait while MIT PRO receives your support request.";
+      setContactStatus("active", "Sending request", "Connecting securely to MIT PRO support.");
+
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, subject, message, company }),
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || data.ok === false) {
+          throw new Error(data.error || "Message could not be sent.");
+        }
+
+        setContactStatus("active", "Message sent", "Thank you. MIT PRO support received your request and will respond soon.");
+        supportFormHelp.textContent = "A copy was delivered to support@mitpro.ai.";
+        supportForm.reset();
+      } catch (error) {
+        setContactStatus("bad", "Message not sent", `${error.message} You can still email support@mitpro.ai directly.`);
+        supportFormHelp.textContent = "If this continues, send your message directly to support@mitpro.ai.";
+      } finally {
+        supportSubmit.disabled = false;
+        supportSubmit.textContent = "Send Message";
+      }
     });
   </script>
 </body>
