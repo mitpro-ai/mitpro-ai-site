@@ -36,8 +36,12 @@
         </div>
         <input name="subject" placeholder="Subject" aria-label="Subject">
         <textarea name="message" placeholder="Message" aria-label="Message"></textarea>
-        <button class="btn primary" type="submit">Send Email</button>
-        <div class="form-help" id="supportFormHelp">This opens your email app with a draft addressed to MIT PRO support.</div>
+        <button class="btn primary" type="submit">Open Email Draft</button>
+        <div class="contact-status" id="supportFormStatus" role="status" aria-live="polite">
+          <strong>Email draft mode</strong>
+          <span>This page prepares your message in your email app. Please press Send there to deliver it.</span>
+        </div>
+        <div class="form-help" id="supportFormHelp">No data is submitted through the website.</div>
       </form>
     </section>
   </main>
@@ -45,6 +49,7 @@
   <script>
     const supportForm = document.getElementById("supportForm");
     const supportFormHelp = document.getElementById("supportFormHelp");
+    const supportFormStatus = document.getElementById("supportFormStatus");
 
     supportForm?.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -62,7 +67,10 @@
       ].join("\n");
 
       const mailto = `mailto:support@mitpro.ai?subject=${encodeURIComponent(subject || "MIT PRO Support Request")}&body=${encodeURIComponent(body)}`;
-      supportFormHelp.textContent = "Opening your email app. If nothing opens, email support@mitpro.ai directly.";
+      supportFormStatus?.classList.add("active");
+      supportFormStatus.querySelector("strong").textContent = "Email draft prepared";
+      supportFormStatus.querySelector("span").textContent = "Your mail app should open now. Please review the draft and press Send inside your email app.";
+      supportFormHelp.textContent = "If no mail app opens, email support@mitpro.ai directly and include the details above.";
       window.location.href = mailto;
     });
   </script>
