@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <div class="particle-field" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
   <header class="topbar">
     <div class="site-shell nav">
       <a class="brand" href="index.html"><img src="assets/mitpro-logo.png" alt="MIT PRO logo"><span><span class="brand-name">MIT PRO</span><span class="brand-sub">Market Intelligence Terminal</span></span></a>
@@ -21,10 +23,19 @@
     </div>
   </header>
   <main class="site-shell legal-hero">
-    <article class="legal-card">
-      <div class="eyebrow">MIT PRO</div>
-      <h1>Terms of Use</h1>
-      <p>By accessing or using MIT PRO, the user agrees to these Terms of Use.</p>
+    <section class="legal-command-hero">
+      <div>
+        <div class="eyebrow">MIT PRO Access Rules</div>
+        <h1>Terms of Use</h1>
+        <p>By accessing or using MIT PRO, the user agrees to these Terms of Use.</p>
+      </div>
+      <div class="legal-status-panel" aria-label="Terms of use status">
+        <span>License Boundaries</span>
+        <span>Acceptable Use</span>
+        <span>Protection First</span>
+      </div>
+    </section>
+    <article class="legal-card legal-document">
       <h2>Platform Purpose</h2>
       <p>MIT PRO is provided for educational, informational, observation, market-intelligence, trader-protection, and decision-support purposes only.</p>
       <h2>No Financial Advice</h2>

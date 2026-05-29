@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <div class="particle-field" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
   <header class="topbar">
     <div class="site-shell nav">
       <a class="brand" href="index.html"><img src="assets/mitpro-logo.png" alt="MIT PRO logo"><span><span class="brand-name">MIT PRO</span><span class="brand-sub">Market Intelligence Terminal</span></span></a>
@@ -21,10 +23,19 @@
     </div>
   </header>
   <main class="site-shell legal-hero">
-    <article class="legal-card">
-      <div class="eyebrow">MIT PRO</div>
-      <h1>Privacy Policy</h1>
-      <p>This Privacy Policy explains how MIT PRO may collect, use, store, protect, and process user information.</p>
+    <section class="legal-command-hero">
+      <div>
+        <div class="eyebrow">MIT PRO Data Protection</div>
+        <h1>Privacy Policy</h1>
+        <p>This Privacy Policy explains how MIT PRO may collect, use, store, protect, and process user information.</p>
+      </div>
+      <div class="legal-status-panel" aria-label="Privacy policy status">
+        <span>License Security</span>
+        <span>No Data Sale</span>
+        <span>Support Access</span>
+      </div>
+    </section>
+    <article class="legal-card legal-document">
       <h2>Data We May Collect</h2>
       <p>MIT PRO may collect name, email address, account information, license information, device identifiers, login/session information, usage activity, app performance logs, error/crash reports, support messages, payment-related references if applicable, technical diagnostics, IP address and browser/device information, and cookies or analytics data if used.</p>
       <h2>Why We Collect Data</h2>

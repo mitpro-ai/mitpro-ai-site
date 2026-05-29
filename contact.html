@@ -12,6 +12,15 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <div class="particle-field" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+  <svg class="icon-defs" aria-hidden="true">
+    <symbol id="icon-user" viewBox="0 0 64 64"><circle cx="32" cy="23" r="11" fill="none" stroke="currentColor" stroke-width="4"/><path d="M14 54c3-12 12-18 18-18s15 6 18 18" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="icon-mail" viewBox="0 0 64 64"><rect x="10" y="16" width="44" height="32" rx="5" fill="none" stroke="currentColor" stroke-width="4"/><path d="m14 21 18 15 18-15" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-shield" viewBox="0 0 64 64"><path d="M32 6 52 14v16c0 14-8 24-20 28C20 54 12 44 12 30V14l20-8Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="m22 32 7 7 14-16" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-card" viewBox="0 0 64 64"><rect x="12" y="14" width="40" height="36" rx="5" fill="none" stroke="currentColor" stroke-width="4"/><path d="M21 25h22M21 34h15M21 42h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="icon-audit" viewBox="0 0 64 64"><rect x="15" y="10" width="34" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="4"/><path d="M23 24h18M23 34h18M23 44h12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+  </svg>
   <header class="topbar">
     <div class="site-shell nav">
       <a class="brand" href="index.html"><img src="assets/mitpro-logo.png" alt="MIT PRO logo"><span><span class="brand-name">MIT PRO</span><span class="brand-sub">Market Intelligence Terminal</span></span></a>
@@ -20,30 +29,61 @@
       </nav>
     </div>
   </header>
-  <main class="site-shell legal-hero">
-    <section class="legal-card">
-      <div class="eyebrow">Support</div>
-      <h1>Contact MIT PRO</h1>
-      <p>For licensing, account access, technical support, privacy questions, legal inquiries, demo access, or general support, email the MIT PRO team.</p>
-      <p><a class="btn primary" href="mailto:support@mitpro.ai">support@mitpro.ai</a></p>
-      <div class="legal-note"><strong>Support Disclaimer</strong><p>MIT PRO support does not provide financial advice, trading advice, or guaranteed trading outcomes.</p></div>
-      <h2>Support Request Template</h2>
-      <p>When contacting support, include your account email, device details, and a short description of what you need help with.</p>
-      <form class="contact-form" id="supportForm">
-        <div class="contact-row">
-          <input name="name" placeholder="Your name" aria-label="Your name" required>
-          <input name="email" type="email" placeholder="Your email" aria-label="Your email" required>
+  <main class="site-shell legal-hero contact-page">
+    <section class="legal-command-hero contact-command-hero">
+      <div>
+        <div class="eyebrow">MIT PRO Support Channel</div>
+        <h1>Contact MIT PRO</h1>
+        <p>For licensing, account access, technical support, privacy questions, legal inquiries, demo access, or general support, send a secure request to the MIT PRO team.</p>
+        <div class="purchase-hero-actions">
+          <a class="btn primary" href="mailto:support@mitpro.ai">support@mitpro.ai</a>
+          <a class="btn ghost" href="purchase.html">Request License</a>
         </div>
-        <input name="subject" placeholder="Subject" aria-label="Subject" required>
-        <textarea name="message" placeholder="Message" aria-label="Message" required></textarea>
-        <input class="contact-hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <button class="btn primary" id="supportSubmit" type="submit">Send Message</button>
-        <div class="contact-status" id="supportFormStatus" role="status" aria-live="polite">
-          <strong>Secure support request</strong>
-          <span>Your message will be sent directly to MIT PRO support.</span>
+      </div>
+      <div class="legal-status-panel" aria-label="Support status">
+        <span>Human Review</span>
+        <span>License Support</span>
+        <span>No Financial Advice</span>
+      </div>
+    </section>
+
+    <section class="legal-card contact-command-grid">
+      <aside class="contact-support-panel">
+        <span class="section-kicker">Support Desk</span>
+        <h2>MIT PRO Support Gateway</h2>
+        <p>Use this channel for platform support, account help, license questions, payment proof follow-up, and legal/privacy requests.</p>
+        <div class="support-channel-grid">
+          <article><span class="matrix-icon arjun"><svg><use href="#icon-shield"></use></svg></span><strong>Protected Support</strong><small>Support remains guidance-only and protection-first.</small></article>
+          <article><span class="matrix-icon"><svg><use href="#icon-mail"></use></svg></span><strong>Email Routing</strong><small>Messages go directly to MIT PRO support/admin.</small></article>
+          <article><span class="matrix-icon timing"><svg><use href="#icon-audit"></use></svg></span><strong>Clear Context</strong><small>Include account email, device details, and a short issue summary.</small></article>
         </div>
-        <div class="form-help" id="supportFormHelp">You can also email support@mitpro.ai directly.</div>
-      </form>
+        <div class="security-notice contact-security" aria-label="Support boundaries">
+          <span>Support Rule</span>
+          <strong>No financial advice</strong>
+          <strong>No guaranteed outcome claims</strong>
+          <strong>No seed phrase or private key requests</strong>
+        </div>
+      </aside>
+
+      <div class="contact-form-panel">
+        <span class="section-kicker">Send Request</span>
+        <h2>Support Request</h2>
+        <form class="contact-form purchase-form" id="supportForm">
+          <div class="contact-row">
+            <label class="field-shell" data-field="user"><span><svg><use href="#icon-user"></use></svg>User</span><input name="name" placeholder="Your name" aria-label="Your name" required></label>
+            <label class="field-shell" data-field="mail"><span><svg><use href="#icon-mail"></use></svg>Mail</span><input name="email" type="email" placeholder="Your email" aria-label="Your email" required></label>
+          </div>
+          <label class="field-shell" data-field="subject"><span><svg><use href="#icon-card"></use></svg>Subject</span><input name="subject" placeholder="Subject" aria-label="Subject" required></label>
+          <label class="field-shell message-shell" data-field="message"><span><svg><use href="#icon-audit"></use></svg>Message</span><textarea name="message" placeholder="Message" aria-label="Message" required></textarea><small>Include account email, device details, and what you need help with.</small></label>
+          <input class="contact-hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn primary" id="supportSubmit" type="submit">Send Support Request</button>
+          <div class="contact-status" id="supportFormStatus" role="status" aria-live="polite">
+            <strong>Secure support request</strong>
+            <span>Your message will be sent directly to MIT PRO support.</span>
+          </div>
+          <div class="form-help" id="supportFormHelp">You can also email support@mitpro.ai directly.</div>
+        </form>
+      </div>
     </section>
   </main>
   <footer class="site-shell footer"><div><span>&copy; 2026 MIT PRO. All rights reserved.</span><small>MIT PRO is not financial advice and does not guarantee trading results.</small></div><div class="footer-links"><a href="mailto:support@mitpro.ai">support@mitpro.ai</a><a href="purchase.html">Purchase</a><a href="privacy-policy.html">Privacy Policy</a><a href="terms-of-use.html">Terms of Use</a><a href="risk-disclaimer.html">Risk Disclaimer</a></div></footer>
