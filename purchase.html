@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Purchase License | MIT PRO</title>
+  <meta name="description" content="Request an MIT PRO license purchase using manual USDT confirmation until Stripe payment is available.">
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="site-shell nav">
+      <a class="brand" href="index.html"><img src="assets/mitpro-logo.png" alt="MIT PRO logo"><span><span class="brand-name">MIT PRO</span><span class="brand-sub">Market Intelligence Terminal</span></span></a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="index.html">Home</a><a href="risk-disclaimer.html">Risk Disclaimer</a><a class="active" href="purchase.html">Purchase</a><a href="privacy-policy.html">Privacy Policy</a><a href="terms-of-use.html">Terms</a><a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <svg class="icon-defs" aria-hidden="true">
+    <symbol id="icon-zeus" viewBox="0 0 64 64"><path d="M30 8c-8 0-14 6-14 14v2c-5 2-8 7-8 13 0 8 6 14 14 14 3 4 12 5 17 0 8 0 17-6 17-16 0-6-4-11-9-13C46 14 39 8 30 8Z" fill="none" stroke="currentColor" stroke-width="4"/><path d="M32 13v38M19 25c7 0 10 4 13 9m13-9c-7 0-10 4-13 9M20 42c7-1 9-4 12-8m12 8c-7-1-9-4-12-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="25" r="3" fill="currentColor"/><circle cx="45" cy="25" r="3" fill="currentColor"/><circle cx="20" cy="42" r="3" fill="currentColor"/><circle cx="44" cy="42" r="3" fill="currentColor"/></symbol>
+    <symbol id="icon-shield" viewBox="0 0 64 64"><path d="M32 6 52 14v16c0 14-8 24-20 28C20 54 12 44 12 30V14l20-8Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="m22 32 7 7 14-16" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="4"/><path d="M23 39 40 22m0 0H27m13 0v13" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-grid" viewBox="0 0 64 64"><rect x="12" y="16" width="40" height="32" rx="5" fill="none" stroke="currentColor" stroke-width="4"/><path d="M12 27h40M12 38h40M25 16v32M39 16v32" stroke="currentColor" stroke-width="3" opacity=".75"/></symbol>
+    <symbol id="icon-target" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="32" cy="32" r="11" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="32" cy="32" r="4" fill="currentColor"/></symbol>
+    <symbol id="icon-chart" viewBox="0 0 64 64"><path d="M12 48h40" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M17 42V28m10 14V18m10 24V24m10 18V14" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="m18 31 9-10 10 8 10-15" fill="none" stroke="currentColor" stroke-width="3" opacity=".7"/></symbol>
+    <symbol id="icon-trap" viewBox="0 0 64 64"><path d="M32 10 55 50H9L32 10Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M32 24v12m0 8h.01" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></symbol>
+    <symbol id="icon-map" viewBox="0 0 64 64"><path d="M12 18 25 12l14 6 13-6v34l-13 6-14-6-13 6V18Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M25 12v34m14-28v34" stroke="currentColor" stroke-width="3"/></symbol>
+    <symbol id="icon-card" viewBox="0 0 64 64"><rect x="12" y="14" width="40" height="36" rx="5" fill="none" stroke="currentColor" stroke-width="4"/><path d="M21 25h22M21 34h15M21 42h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 64 64"><circle cx="32" cy="32" r="23" fill="none" stroke="currentColor" stroke-width="4"/><path d="M32 18v15l10 6" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-audit" viewBox="0 0 64 64"><rect x="15" y="10" width="34" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="4"/><path d="M23 24h18M23 34h18M23 44h12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="icon-pc" viewBox="0 0 64 64"><rect x="10" y="14" width="44" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="4"/><path d="M25 52h14M32 44v8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="icon-future" viewBox="0 0 64 64"><path d="M13 32h32M34 20l12 12-12 12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="4" opacity=".55"/></symbol>
+    <symbol id="icon-user" viewBox="0 0 64 64"><circle cx="32" cy="23" r="11" fill="none" stroke="currentColor" stroke-width="4"/><path d="M14 54c3-12 12-18 18-18s15 6 18 18" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="icon-mail" viewBox="0 0 64 64"><rect x="10" y="16" width="44" height="32" rx="5" fill="none" stroke="currentColor" stroke-width="4"/><path d="m14 21 18 15 18-15" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-phone" viewBox="0 0 64 64"><path d="M23 10h18a5 5 0 0 1 5 5v34a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V15a5 5 0 0 1 5-5Z" fill="none" stroke="currentColor" stroke-width="4"/><path d="M28 47h8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="icon-network" viewBox="0 0 64 64"><circle cx="32" cy="32" r="23" fill="none" stroke="currentColor" stroke-width="4"/><path d="M10 32h44M32 9c7 7 10 15 10 23s-3 16-10 23M32 9c-7 7-10 15-10 23s3 16 10 23" fill="none" stroke="currentColor" stroke-width="3"/></symbol>
+    <symbol id="icon-link" viewBox="0 0 64 64"><path d="M26 22h-5a10 10 0 0 0 0 20h8M38 42h5a10 10 0 0 0 0-20h-8M24 32h16" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <main class="site-shell legal-hero">
+    <section class="purchase-hero">
+      <div class="purchase-hero-copy">
+        <div class="eyebrow">MIT PRO License Access</div>
+        <h1>Activate Your MIT PRO Access</h1>
+        <p>Start with the license level that matches your market coverage, protection needs, and discipline workflow. Manual USDT confirmation is active until Stripe payment is available.</p>
+        <div class="license-status-strip" aria-label="License status">
+          <span>USDT Manual Active</span>
+          <span>Stripe Coming Soon</span>
+          <span>License Issued After Verification</span>
+        </div>
+        <div class="purchase-hero-actions">
+          <a class="btn primary" href="#purchase-form">Request License</a>
+          <a class="btn ghost" href="#feature-comparison">Compare Plans</a>
+        </div>
+      </div>
+      <div class="license-core" aria-label="MIT PRO license core visual">
+        <span class="reactor-particle particle-a"></span>
+        <span class="reactor-particle particle-b"></span>
+        <span class="reactor-particle particle-c"></span>
+        <div class="license-orbit orbit-a"></div>
+        <div class="license-orbit orbit-b"></div>
+        <div class="license-orbit orbit-c"></div>
+        <div class="license-token reactor-token">
+          <img src="assets/license-core-reactor.png" alt="MIT PRO license core reactor">
+          <strong>MIT PRO CORE REACTOR</strong>
+          <span>ACCESS COMMAND CENTER</span>
+        </div>
+        <button class="license-signal signal-basic" type="button" data-tier="BASIC">Guardian Access<small>Basic Access</small></button>
+        <button class="license-signal signal-pro" type="button" data-tier="PRO">Commander Access<small>Professional Access</small></button>
+        <button class="license-signal signal-elite" type="button" data-tier="ELITE">Supreme Access<small>Full Access</small></button>
+      </div>
+    </section>
+
+    <section class="legal-card purchase-card">
+      <div class="legal-note">
+        <strong>Payment Safety</strong>
+        <p>MIT PRO will never ask for your wallet seed phrase, private key, remote wallet access, or exchange login. Send payment only after confirming the official wallet details with MIT PRO support.</p>
+        <div class="security-notice" aria-label="MIT PRO will never request these details">
+          <span>Never Share</span>
+          <strong>Seed Phrase</strong>
+          <strong>Private Key</strong>
+          <strong>Remote Access</strong>
+          <strong>Exchange Password</strong>
+          <strong>OTP Codes</strong>
+          <strong>Screen Sharing Requests</strong>
+        </div>
+      </div>
+
+      <div class="license-dual-core" aria-label="MIT PRO intelligence and protection layers">
+        <article class="core-card zeus-card">
+          <div class="core-visual zeus-visual" aria-hidden="true">
+            <span class="core-energy-ring"></span>
+            <span class="core-energy-ring ring-two"></span>
+            <img src="assets/zeus-neural-core.png" alt="">
+            <span class="core-spark spark-one"></span>
+            <span class="core-spark spark-two"></span>
+            <span class="core-spark spark-three"></span>
+          </div>
+          <div class="core-copy">
+            <span>Zeus Mind</span>
+            <h2>Zeus Intelligence Core</h2>
+            <b class="system-status active">Intelligence Active</b>
+            <em class="system-substatus neural">Neural Activity Active</em>
+            <p>Continuously interprets market structure, liquidity behavior, timing context, and evolving market conditions to assist user awareness.</p>
+          </div>
+        </article>
+        <div class="core-link" aria-hidden="true">
+          <span>Zeus Analysis</span>
+          <i></i>
+          <strong>MIT PRO Decision Support</strong>
+          <i></i>
+          <span>Arjun Protection</span>
+        </div>
+        <article class="core-card arjun-card">
+          <div class="core-visual shield-visual" aria-hidden="true">
+            <span class="core-energy-ring"></span>
+            <span class="core-energy-ring ring-two"></span>
+            <img src="assets/arjun-defense-core.png" alt="">
+            <span class="core-scan"></span>
+            <span class="core-spark spark-one"></span>
+            <span class="core-spark spark-two"></span>
+            <span class="core-spark spark-three"></span>
+          </div>
+          <div class="core-copy">
+            <span>Arjun Defense</span>
+            <h2>Arjun Defense System</h2>
+            <b class="system-status protection">Protection Active</b>
+            <em class="system-substatus shield">Protection Integrity 100%</em>
+            <p>Designed to promote discipline through session controls, cooldown protection, behavioral safeguards, and capital preservation tools.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="purchase-plans">
+        <article class="purchase-plan plan-basic" data-plan-card="BASIC">
+          <b class="access-badge">Foundation Access</b>
+          <span>Starter protection</span>
+          <h2>BASIC</h2>
+          <p>REAL market observation, core strategy reading, and basic Arjun protection.</p>
+          <ul>
+            <li>REAL mode</li>
+            <li>Core strategies</li>
+            <li>Basic Arjun guard</li>
+          </ul>
+          <button class="btn" type="button" data-plan="BASIC">Choose Basic</button>
+        </article>
+        <article class="purchase-plan featured plan-pro selected" data-plan-card="PRO">
+          <b class="plan-ribbon">Recommended</b>
+          <span>Most requested</span>
+          <h2>PRO</h2>
+          <p>REAL advanced tools, OTC core access, timing center, and full Arjun discipline guard.</p>
+          <ul>
+            <li>REAL advanced tools</li>
+            <li>OTC core access</li>
+            <li>Full Arjun discipline guard</li>
+          </ul>
+          <button class="btn primary" type="button" data-plan="PRO">Choose Pro</button>
+        </article>
+        <article class="purchase-plan plan-elite" data-plan-card="ELITE">
+          <b class="elite-crown">Elite Access</b>
+          <span>Full command</span>
+          <h2>ELITE</h2>
+          <p>Full user terminal access with advanced OTC trap suite and all Pro protection features.</p>
+          <ul>
+            <li>Advanced OTC intelligence</li>
+            <li>Full Battlefield suite</li>
+            <li>Future priority access <button class="info-dot inline-tip" type="button" aria-label="Future priority access info" data-tip="Early access to future MIT Pro intelligence modules and advanced platform capabilities.">i</button></li>
+          </ul>
+          <button class="btn" type="button" data-plan="ELITE">Choose Elite</button>
+        </article>
+      </div>
+
+      <h2 id="feature-comparison">Feature Comparison</h2>
+      <div class="feature-matrix" aria-label="MIT PRO license feature comparison">
+        <div class="feature-row feature-head"><span>Feature</span><strong>BASIC</strong><strong>PRO</strong><strong>ELITE</strong></div>
+        <div class="feature-group"><span>Intelligence</span></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon zeus"><svg><use href="#icon-zeus"></use></svg></span><b>Zeus Market Intelligence</b><button class="info-dot" type="button" aria-label="Zeus Market Intelligence info" data-tip="Reads market structure, pressure, liquidity, and timing context for user awareness.">i</button></span><strong class="level">Core</strong><strong class="level full">Advanced</strong><strong class="level elite">Elite</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon arjun"><svg><use href="#icon-shield"></use></svg></span><b>Arjun Defense System</b><button class="info-dot" type="button" aria-label="Arjun Defense System info" data-tip="Promotes session discipline through guard rules, cooldown, and behavioral protection controls.">i</button></span><strong class="level">Basic</strong><strong class="level full">Advanced</strong><strong class="level elite">Elite</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon live"><svg><use href="#icon-arrow"></use></svg></span><b>REAL market mode</b></span><strong class="yes">✓</strong><strong class="yes">✓</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon otc"><svg><use href="#icon-grid"></use></svg></span><b>OTC market access</b></span><strong class="no">×</strong><strong class="partial">Partial</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon core"><svg><use href="#icon-target"></use></svg></span><b>Core strategies</b></span><strong class="yes">✓</strong><strong class="yes">✓</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon chart"><svg><use href="#icon-chart"></use></svg></span><b>Advanced REAL strategies</b></span><strong class="no">×</strong><strong class="yes">✓</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon trap"><svg><use href="#icon-trap"></use></svg></span><b>OTC trap suite</b></span><strong class="no">×</strong><strong class="partial">Core only</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon map"><svg><use href="#icon-map"></use></svg></span><b>Liquidity Battlefield</b><button class="info-dot" type="button" aria-label="Liquidity Battlefield info" data-tip="Visual market map that explains watched zone, pressure, sweep, and phase context.">i</button></span><strong class="yes">✓</strong><strong class="yes">✓</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon learn"><svg><use href="#icon-card"></use></svg></span><b>Learning cards</b><button class="info-dot" type="button" aria-label="Learning cards info" data-tip="Short guidance cards to help users understand what the current reading means.">i</button></span><strong class="yes">✓</strong><strong class="yes">✓</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon timing"><svg><use href="#icon-clock"></use></svg></span><b>Timing Sync Center</b></span><strong class="no">×</strong><strong class="partial">Partial</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon arjun"><svg><use href="#icon-shield"></use></svg></span><b>Arjun capital guard</b></span><strong class="level">Basic</strong><strong class="level full">Advanced</strong><strong class="level full">Advanced</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon arjun"><svg><use href="#icon-shield"></use></svg></span><b>Arjun discipline guard</b><button class="info-dot" type="button" aria-label="Arjun discipline guard info" data-tip="Helps enforce cooldown and behavioral discipline controls.">i</button></span><strong class="no">×</strong><strong class="yes">✓</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon timing"><svg><use href="#icon-clock"></use></svg></span><b>Cooldown protection</b><button class="info-dot" type="button" aria-label="Cooldown protection info" data-tip="Pauses live guidance after repeated aggressive behavior so the user can reset.">i</button></span><strong class="level">Basic</strong><strong class="yes">✓</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon audit"><svg><use href="#icon-audit"></use></svg></span><b>Session Intelligence Audit</b><button class="info-dot" type="button" aria-label="Session Intelligence Audit info" data-tip="Review session events, protection states, and system readings.">i</button></span><strong class="yes">✓</strong><strong class="yes">✓</strong><strong class="yes">✓</strong></div>
+        <div class="feature-row"><span class="feature-name"><span class="matrix-icon pc"><svg><use href="#icon-pc"></use></svg></span><b>Performance Mode</b><button class="info-dot" type="button" aria-label="Performance Mode info" data-tip="Keeps the terminal lighter on lower-powered PCs.">i</button></span><strong class="yes">✓</strong><strong class="yes">✓</strong><strong class="yes">✓</strong></div>
+        <div class="feature-group"><span>Zeus Evolution</span></div>
+        <div class="feature-row muted-row"><span class="feature-name"><span class="matrix-icon future"><svg><use href="#icon-future"></use></svg></span><b>Zeus Evolution Engine</b><button class="info-dot" type="button" aria-label="Zeus Evolution Engine info" data-tip="Future roadmap area for adaptive intelligence, behavioral learning, and autonomous validation.">i</button></span><strong class="future">Phase II</strong><strong class="future">Phase III</strong><strong class="future">Future Core</strong></div>
+      </div>
+
+      <h2 id="purchase-form">Request Purchase</h2>
+      <div class="activation-grid">
+        <aside class="activation-chamber" aria-label="License activation chamber">
+          <span>License Activation Chamber</span>
+          <div class="activation-core">
+            <img src="assets/license-core-reactor.png" alt="">
+          </div>
+          <div class="activation-steps">
+            <article class="step-current" data-step="request"><strong>Request</strong><small>Waiting for user details</small></article>
+            <article data-step="verify"><strong>Verify</strong><small>USDT reference reviewed safely</small></article>
+            <article data-step="security"><strong>Arjun Security Check</strong><small>License profile protected</small></article>
+            <article data-step="activated"><strong>License Ready</strong><small>Access code issued after validation</small></article>
+          </div>
+          <div class="trust-grid">
+            <span>Secure Verification</span>
+            <span>Arjun Protected</span>
+            <span>Human Review</span>
+            <span>MITPRO.AI</span>
+            <span>support@mitpro.ai</span>
+          </div>
+        </aside>
+        <div>
+          <div class="purchase-flow">
+            <article><strong>1</strong><span>Select Plan</span></article>
+            <article><strong>2</strong><span>Send Request</span></article>
+            <article><strong>3</strong><span>Confirm USDT</span></article>
+            <article><strong>4</strong><span>Receive License</span></article>
+          </div>
+          <form class="contact-form purchase-form" id="purchaseForm">
+            <div class="contact-row">
+              <label class="field-shell" data-field="user"><span><svg><use href="#icon-user"></use></svg>User</span><input name="name" placeholder="Your name" aria-label="Your name" required></label>
+              <label class="field-shell" data-field="mail"><span><svg><use href="#icon-mail"></use></svg>Mail</span><input name="email" type="email" placeholder="Your email" aria-label="Your email" required></label>
+            </div>
+            <div class="contact-row">
+              <label class="field-shell" data-field="contact"><span><svg><use href="#icon-phone"></use></svg>Contact</span><input name="phone" pattern="^[+\d][\d\s().-]{6,24}$" placeholder="Phone / WhatsApp" aria-label="Phone or WhatsApp"></label>
+              <label class="field-shell" data-field="access"><span><svg><use href="#icon-shield"></use></svg>Access</span><select name="plan" id="purchasePlan" aria-label="Plan">
+                <option>BASIC</option>
+                <option selected>PRO</option>
+                <option>ELITE</option>
+              </select></label>
+            </div>
+            <div class="contact-row">
+              <label class="field-shell" data-field="network"><span><svg><use href="#icon-network"></use></svg>Network</span><select name="network" aria-label="USDT network">
+                <option selected>TRC20</option>
+                <option>BEP20</option>
+                <option>ERC20</option>
+              </select></label>
+              <label class="field-shell" data-field="txid"><span><svg><use href="#icon-link"></use></svg>TXID</span><input name="txid" placeholder="Payment reference optional" aria-label="Payment reference"></label>
+            </div>
+            <label class="field-shell proof-shell" data-field="proof"><span><svg><use href="#icon-card"></use></svg>Payment Screenshot Optional</span><input name="paymentProof" type="file" accept=".png,.jpg,.jpeg,.webp,.pdf,image/png,image/jpeg,image/webp,application/pdf" aria-label="Payment screenshot or PDF proof"><small>Attach USDT payment proof only if payment is already completed. PNG, JPG, WEBP, or PDF up to 5 MB.</small></label>
+            <textarea name="note" placeholder="Optional message. Example: I want PRO license and will pay through USDT TRC20." aria-label="Optional message"></textarea>
+            <input class="contact-hp" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button class="btn primary" id="purchaseSubmit" type="submit">Submit USDT Purchase Request</button>
+            <div class="contact-status" id="purchaseFormStatus" role="status" aria-live="polite">
+              <strong>Manual USDT confirmation</strong>
+              <span>Payment details are verified before any license code is issued.</span>
+            </div>
+            <div class="form-help" id="purchaseFormHelp">Stripe will be added later. Current public purchase flow is USDT manual confirmation only.</div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-shell footer"><div><span>&copy; 2026 MIT PRO. All rights reserved.</span><small>MIT PRO is not financial advice and does not guarantee trading results.</small></div><div class="footer-links"><a href="mailto:support@mitpro.ai">support@mitpro.ai</a><a href="purchase.html">Purchase</a><a href="privacy-policy.html">Privacy Policy</a><a href="terms-of-use.html">Terms of Use</a><a href="risk-disclaimer.html">Risk Disclaimer</a></div></footer>
+
+  <script>
+    const purchaseForm = document.getElementById("purchaseForm");
+    const purchasePlan = document.getElementById("purchasePlan");
+    const purchaseFormHelp = document.getElementById("purchaseFormHelp");
+    const purchaseFormStatus = document.getElementById("purchaseFormStatus");
+    const purchaseSubmit = document.getElementById("purchaseSubmit");
+    const activationSteps = Array.from(document.querySelectorAll(".activation-steps article"));
+    const requestKey = "mitpro_purchase_request_signature";
+    const maxProofBytes = 5 * 1024 * 1024;
+    const allowedProofTypes = ["image/png", "image/jpeg", "image/webp", "application/pdf"];
+
+    document.querySelectorAll(".feature-row .yes").forEach((cell) => { cell.textContent = "\u2713"; });
+    document.querySelectorAll(".feature-row .no").forEach((cell) => { cell.textContent = "\u00d7"; });
+
+    function addFeatureGroup(beforeText, label) {
+      const rows = Array.from(document.querySelectorAll(".feature-row"));
+      const target = rows.find((row) => row.textContent.includes(beforeText));
+      if (!target || target.previousElementSibling?.classList.contains("feature-group")) return;
+      const group = document.createElement("div");
+      group.className = "feature-group";
+      group.innerHTML = `<span>${label}</span>`;
+      target.before(group);
+    }
+
+    addFeatureGroup("Core strategies", "Strategy");
+    addFeatureGroup("Liquidity Battlefield", "Protection");
+    addFeatureGroup("Session Intelligence Audit", "System");
+
+    const arjunDefenseRow = Array.from(document.querySelectorAll(".feature-row")).find((row) => row.textContent.includes("Arjun Defense System"));
+    const protectionGroup = Array.from(document.querySelectorAll(".feature-group")).find((group) => group.textContent.includes("Protection"));
+    if (arjunDefenseRow && protectionGroup) protectionGroup.after(arjunDefenseRow);
+
+    function highlightPlan(plan) {
+      document.querySelectorAll("[data-plan-card]").forEach((card) => {
+        card.classList.toggle("selected", card.dataset.planCard === plan);
+      });
+      document.querySelectorAll("[data-tier]").forEach((tier) => {
+        tier.classList.toggle("selected", tier.dataset.tier === plan);
+      });
+    }
+
+    function choosePlan(plan, shouldScroll = true) {
+      purchasePlan.value = plan;
+      highlightPlan(plan);
+      if (shouldScroll) purchaseForm.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function setActivationStage(stage) {
+      const order = ["request", "verify", "security", "activated"];
+      const activeIndex = order.indexOf(stage);
+      activationSteps.forEach((step) => {
+        const stepIndex = order.indexOf(step.dataset.step);
+        step.classList.toggle("step-complete", stepIndex >= 0 && stepIndex < activeIndex);
+        step.classList.toggle("step-current", stepIndex === activeIndex);
+      });
+    }
+
+    document.querySelectorAll("[data-plan]").forEach((button) => {
+      button.addEventListener("click", () => choosePlan(button.dataset.plan));
+    });
+
+    document.querySelectorAll("[data-tier]").forEach((button) => {
+      button.addEventListener("click", () => choosePlan(button.dataset.tier, false));
+    });
+
+    purchasePlan?.addEventListener("change", () => highlightPlan(purchasePlan.value));
+    highlightPlan(purchasePlan.value);
+
+    purchaseForm?.querySelectorAll("input, select").forEach((field) => {
+      const shell = field.closest(".field-shell");
+      const refresh = () => shell?.classList.toggle("field-ok", field.checkValidity() && Boolean(field.value || field.tagName === "SELECT"));
+      field.addEventListener("input", refresh);
+      field.addEventListener("change", refresh);
+      refresh();
+    });
+
+    function setPurchaseStatus(type, title, message) {
+      purchaseFormStatus?.classList.remove("active", "bad");
+      if (type) purchaseFormStatus?.classList.add(type);
+      purchaseFormStatus.querySelector("strong").textContent = title;
+      purchaseFormStatus.querySelector("span").textContent = message;
+    }
+
+    function readPaymentProof(file) {
+      return new Promise((resolve, reject) => {
+        if (!file || file.size === 0) return resolve(null);
+        if (!allowedProofTypes.includes(file.type)) return reject(new Error("Payment proof must be PNG, JPG, WEBP, or PDF."));
+        if (file.size > maxProofBytes) return reject(new Error("Payment proof must be 5 MB or smaller."));
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("Payment proof could not be read."));
+        reader.onload = () => {
+          const content = String(reader.result || "").split(",")[1] || "";
+          resolve({
+            filename: file.name,
+            contentType: file.type,
+            size: file.size,
+            content,
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    purchaseForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(purchaseForm);
+      const name = String(form.get("name") || "").trim();
+      const email = String(form.get("email") || "").trim();
+      const phone = String(form.get("phone") || "").trim();
+      const plan = String(form.get("plan") || "PRO").trim();
+      const network = String(form.get("network") || "TRC20").trim();
+      const txid = String(form.get("txid") || "").trim();
+      const note = String(form.get("note") || "").trim();
+      const company = String(form.get("company") || "").trim();
+      const proofFile = purchaseForm.querySelector("[name='paymentProof']")?.files?.[0] || null;
+
+      if (!name || !email) {
+        setPurchaseStatus("bad", "Missing details", "Please add your name and email before submitting.");
+        setActivationStage("request");
+        return;
+      }
+      if (!purchaseForm.checkValidity()) {
+        setPurchaseStatus("bad", "Check details", "Please correct the highlighted fields before submitting.");
+        setActivationStage("request");
+        return;
+      }
+
+      const requestSignature = `${email.toLowerCase()}|${plan}|${network}|${txid || "pending"}`;
+      if (window.localStorage?.getItem(requestKey) === requestSignature) {
+        setPurchaseStatus("bad", "Duplicate request paused", "This request was already submitted from this browser. Change the details or contact support.");
+        setActivationStage("request");
+        return;
+      }
+
+      purchaseSubmit.disabled = true;
+      purchaseSubmit.textContent = "Submitting...";
+      purchaseFormHelp.textContent = "Please wait while MIT PRO receives your purchase request.";
+      setPurchaseStatus("active", "Sending request", "Connecting securely to MIT PRO support.");
+      setActivationStage("verify");
+
+      const message = [
+        "MIT PRO license purchase request",
+        "",
+        `Plan: ${plan}`,
+        "Payment method: USDT manual confirmation",
+        `Network: ${network}`,
+        `Phone / WhatsApp: ${phone || "-"}`,
+        `TXID / Reference: ${txid || "Not provided yet"}`,
+        "",
+        "User note:",
+        note || "-",
+      ].join("\n");
+
+      try {
+        const paymentProof = await readPaymentProof(proofFile);
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            email,
+            phone,
+            plan,
+            network,
+            txid,
+            paymentProof,
+            requestType: "license_purchase",
+            subject: `MIT PRO License Purchase Request - ${plan}`,
+            message,
+            company,
+          }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data.ok === false) throw new Error(data.error || "Purchase request could not be sent.");
+        window.localStorage?.setItem(requestKey, requestSignature);
+        setTimeout(() => setActivationStage("security"), 700);
+        setTimeout(() => setActivationStage("activated"), 1600);
+        setPurchaseStatus("active", "Request received", "USDT payment will be verified and your license will be issued after confirmation.");
+        purchaseFormHelp.textContent = "A copy was delivered to MIT PRO support.";
+        purchaseForm.reset();
+        choosePlan("PRO", false);
+      } catch (error) {
+        setPurchaseStatus("bad", "Request not sent", `${error.message} You can still email support@mitpro.ai directly.`);
+        purchaseFormHelp.textContent = "If this continues, send your purchase request directly to support@mitpro.ai.";
+        setActivationStage("request");
+      } finally {
+        purchaseSubmit.disabled = false;
+        purchaseSubmit.textContent = "Submit USDT Purchase Request";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -5,6 +5,7 @@ Static landing website for MIT PRO.
 ## Pages
 
 - `index.html`
+- `purchase.html`
 - `risk-disclaimer.html`
 - `privacy-policy.html`
 - `terms-of-use.html`
@@ -26,7 +27,15 @@ Required Vercel environment variables:
 
 - `RESEND_API_KEY` - API key from Resend.
 - `CONTACT_FROM` - verified sender, for example `MIT PRO <support@mitpro.ai>`.
-- `CONTACT_TO` - optional recipient override. Defaults to `support@mitpro.ai`.
+- `CONTACT_TO` - support recipient list. Defaults to `support@mitpro.ai`. Multiple inboxes can be comma-separated.
+- `CONTACT_ADMIN_TO` - optional admin recipient list for purchase/support copies. Multiple inboxes can be comma-separated.
+
+Example:
+
+```text
+CONTACT_TO=support@mitpro.ai
+CONTACT_ADMIN_TO=admin@mitpro.ai,owner@example.com
+```
 
 ## Brand
 
