@@ -407,6 +407,29 @@ h3,
   font-family: Rajdhani, "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
+.translation-notice {
+  max-width: 1180px;
+  margin: -10px auto 28px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 213, 111, 0.42);
+  border-radius: 14px;
+  background: rgba(255, 213, 111, 0.08);
+  color: #ffe6a1;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.45;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+}
+
+.translation-notice[hidden] {
+  display: none;
+}
+
+.lang-ar .translation-notice {
+  direction: ltr;
+  text-align: left;
+}
+
 .nav-links a {
   padding: 8px 10px;
   border-radius: 999px;

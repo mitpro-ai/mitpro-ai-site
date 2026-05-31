@@ -2754,6 +2754,7 @@
 
   const originals = new WeakMap();
   const ignoredTags = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "SVG", "PATH", "SYMBOL"]);
+  const translationNoticeText = "AI-assisted translation notice: Non-English content is provided for convenience using AI-assisted translation. The English version remains the official reference for MIT Pro terms, privacy, risk, and product information.";
 
   function translateText(text, language) {
     if (language === "en") return text;
@@ -2798,6 +2799,22 @@
       button.classList.toggle("active", active);
       button.setAttribute("aria-pressed", active ? "true" : "false");
     });
+
+    let notice = document.querySelector("[data-translation-notice]");
+    if (!notice) {
+      notice = document.createElement("div");
+      notice.className = "translation-notice";
+      notice.setAttribute("data-translation-notice", "true");
+      notice.setAttribute("role", "note");
+      const nav = document.querySelector(".nav");
+      if (nav && nav.parentNode) {
+        nav.insertAdjacentElement("afterend", notice);
+      } else {
+        document.body.insertBefore(notice, document.body.firstChild);
+      }
+    }
+    notice.textContent = translationNoticeText;
+    notice.hidden = language === "en";
   }
 
   function initLanguageSwitch() {
