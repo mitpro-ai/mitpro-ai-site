@@ -2806,11 +2806,11 @@
       notice.className = "translation-notice";
       notice.setAttribute("data-translation-notice", "true");
       notice.setAttribute("role", "note");
-      const nav = document.querySelector(".nav");
-      if (nav && nav.parentNode) {
-        nav.insertAdjacentElement("afterend", notice);
+      const footer = document.querySelector(".footer, footer");
+      if (footer && footer.parentNode) {
+        footer.insertAdjacentElement("afterend", notice);
       } else {
-        document.body.insertBefore(notice, document.body.firstChild);
+        document.body.appendChild(notice);
       }
     }
     notice.textContent = translationNoticeText;
