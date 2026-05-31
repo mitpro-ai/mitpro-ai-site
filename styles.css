@@ -238,6 +238,56 @@ h3,
   flex-wrap: wrap;
 }
 
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid rgba(102, 255, 240, 0.22);
+  border-radius: 999px;
+  background: rgba(3, 10, 12, 0.58);
+}
+
+.language-switch button {
+  min-height: 28px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 10px;
+  color: #cce4e1;
+  background: transparent;
+  font-family: Rajdhani, "Segoe UI", Arial, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.language-switch button:hover,
+.language-switch button.active {
+  color: var(--cyan);
+  background: rgba(102, 255, 240, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(102, 255, 240, 0.28);
+}
+
+.lang-hi {
+  font-family: Inter, "Nirmala UI", "Mangal", "Segoe UI", Arial, sans-serif;
+}
+
+.lang-hi .brand-name,
+.lang-hi h1,
+.lang-hi h2,
+.lang-hi h3,
+.lang-hi .section-kicker,
+.lang-hi .status-badge,
+.lang-hi .btn,
+.lang-hi .preview-top,
+.lang-hi .terminal-readout strong,
+.lang-hi .terminal-readout small,
+.lang-hi .language-switch button {
+  font-family: Rajdhani, "Nirmala UI", "Mangal", "Segoe UI", Arial, sans-serif;
+}
+
 .nav-links a {
   padding: 8px 10px;
   border-radius: 999px;
