@@ -274,18 +274,51 @@ h3,
   font-family: Inter, "Nirmala UI", "Mangal", "Segoe UI", Arial, sans-serif;
 }
 
+.lang-ar {
+  font-family: Inter, "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+.lang-ar .nav,
+.lang-ar .footer,
+.lang-ar .purchase-hero,
+.lang-ar .legal-command-hero,
+.lang-ar .section-header {
+  direction: rtl;
+}
+
+.lang-ar .brand,
+.lang-ar .nav-links,
+.lang-ar .purchase-hero-actions,
+.lang-ar .footer-links {
+  direction: ltr;
+}
+
 .lang-hi .brand-name,
+.lang-ar .brand-name,
 .lang-hi h1,
+.lang-ar h1,
 .lang-hi h2,
+.lang-ar h2,
 .lang-hi h3,
+.lang-ar h3,
 .lang-hi .section-kicker,
+.lang-ar .section-kicker,
 .lang-hi .status-badge,
+.lang-ar .status-badge,
 .lang-hi .btn,
+.lang-ar .btn,
 .lang-hi .preview-top,
+.lang-ar .preview-top,
 .lang-hi .terminal-readout strong,
+.lang-ar .terminal-readout strong,
 .lang-hi .terminal-readout small,
+.lang-ar .terminal-readout small,
 .lang-hi .language-switch button {
   font-family: Rajdhani, "Nirmala UI", "Mangal", "Segoe UI", Arial, sans-serif;
+}
+
+.lang-ar .language-switch button {
+  font-family: Rajdhani, "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
 .nav-links a {
