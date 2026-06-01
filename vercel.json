@@ -1,6 +1,48 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/login",
+      "destination": "/partner",
+      "permanent": false
+    },
+    {
+      "source": "/pricing",
+      "destination": "/purchase",
+      "permanent": false
+    },
+    {
+      "source": "/risk",
+      "destination": "/risk-disclaimer",
+      "permanent": false
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy-policy",
+      "permanent": false
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms-of-use",
+      "permanent": false
+    },
+    {
+      "source": "/mission",
+      "destination": "/#mission",
+      "permanent": false
+    },
+    {
+      "source": "/features",
+      "destination": "/#features",
+      "permanent": false
+    },
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
