@@ -40,4 +40,4 @@ CONTACT_ADMIN_TO=admin@mitpro.ai,owner@example.com
 ## Brand
 
 - Support: `support@mitpro.ai`
-- Subtitle: Adaptive Market Intelligence & Trader Protection Terminal
+- Subtitle: Adaptive Market Intelligence & Human-Centered Protection Terminal
