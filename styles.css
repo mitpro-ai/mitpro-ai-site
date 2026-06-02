@@ -4371,6 +4371,13 @@ button.license-signal {
   background: rgba(3, 10, 12, 0.44);
 }
 
+.footer a.social-link,
+.nav-links a.social-link {
+  border-color: rgba(255, 124, 205, 0.32);
+  color: #ffd7f0;
+  background: rgba(255, 124, 205, 0.06);
+}
+
 .legal-hero {
   display: grid;
   gap: 18px;
