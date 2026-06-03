@@ -70,7 +70,7 @@ async function writeEvent(user, payload) {
   }
 }
 
-async function syncUserProfile(email, data, licenseKey, now) {
+async function createUserProfile(email, data, licenseKey, now) {
   const fullName = String(data.full_name || data.name || "").trim().slice(0, 120);
   const phone = String(data.phone || "").trim().slice(0, 60);
   const existing = await getRows("users", new URLSearchParams({
@@ -80,15 +80,9 @@ async function syncUserProfile(email, data, licenseKey, now) {
   }).toString());
 
   if (existing.length) {
-    const patch = {
-      license_key: licenseKey,
-      status: "active",
-      updated_at: now,
-    };
-    if (fullName) patch.full_name = fullName;
-    if (phone) patch.phone = phone;
-    await supabaseRequest("PATCH", "users", patch, new URLSearchParams({ email: `eq.${email}` }).toString());
-    return { existed: true, user_id: existing[0].id || "" };
+    const error = new Error("Customer email already exists. Use renew/update license instead of generating a new user.");
+    error.statusCode = 409;
+    throw error;
   }
 
   const payload = {
@@ -102,7 +96,7 @@ async function syncUserProfile(email, data, licenseKey, now) {
     updated_at: now,
   };
   const rows = await supabaseRequest("POST", "users", payload);
-  return { existed: false, user_id: rows[0]?.id || "" };
+  return { user_id: rows[0]?.id || "" };
 }
 
 module.exports = async function handler(req, res) {
@@ -125,7 +119,6 @@ module.exports = async function handler(req, res) {
 
   const validDays = clampInt(body.valid_days, 1, 3650, 30);
   const maxDevices = clampInt(body.max_devices, 1, 20, 1);
-  const replaceExisting = body.replace_existing !== false;
   const now = nowIso();
   const expiryDate = plusDaysIso(validDays);
   let licenseKey = String(body.license_key || "").trim().toUpperCase();
@@ -140,18 +133,19 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 409, { ok: false, error: "License key already exists. Leave key blank to auto-generate another." });
   }
 
-  const syncedUser = await syncUserProfile(email, { ...body, phone }, licenseKey, now);
-
-  if (replaceExisting) {
-    await supabaseRequest("PATCH", "user_licenses", {
-      status: "suspended",
-      updated_at: now,
-      notes: `Replaced by ${licenseKey} from Partner Portal.`,
-    }, new URLSearchParams({ email: `eq.${email}`, status: "eq.active" }).toString()).catch(() => []);
+  const existingLicense = await getRows("user_licenses", new URLSearchParams({
+    email: `eq.${email}`,
+    select: "license_key",
+    limit: "1",
+  }).toString());
+  if (existingLicense.length) {
+    return sendJson(res, 409, { ok: false, error: "Customer already has a license. Use renew/update license instead." });
   }
 
+  const createdUser = await createUserProfile(email, { ...body, phone }, licenseKey, now);
+
   const licensePayload = {
-    user_id: syncedUser.user_id ? String(syncedUser.user_id) : null,
+    user_id: createdUser.user_id ? String(createdUser.user_id) : null,
     email,
     license_key: licenseKey,
     plan_code: planCode,
@@ -176,8 +170,7 @@ module.exports = async function handler(req, res) {
       plan_code: planCode,
       valid_days: validDays,
       max_devices: maxDevices,
-      user_existed: syncedUser.existed,
-      replaced_existing: replaceExisting,
+      user_created: true,
     },
   });
 
@@ -187,11 +180,10 @@ module.exports = async function handler(req, res) {
     license_key: licenseKey,
     plan_code: planCode,
     expiry_date: expiryDate,
-    user_existed: syncedUser.existed,
-    replaced_existing: replaceExisting,
+    user_created: true,
     rows,
   });
   } catch (error) {
-    return sendJson(res, 500, { ok: false, error: error.message || "License creation failed." });
+    return sendJson(res, error.statusCode || 500, { ok: false, error: error.message || "License creation failed." });
   }
 };
