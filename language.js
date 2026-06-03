@@ -2837,6 +2837,121 @@
     }
 };
 
+  translations.ur = {
+    "Home": "ہوم",
+    "Mission": "مشن",
+    "Features": "فیچرز",
+    "Pricing": "پرائسنگ",
+    "Risk": "رسک",
+    "Privacy": "پرائیویسی",
+    "Terms": "شرائط",
+    "Contact": "رابطہ",
+    "Login": "لاگ اِن",
+    "Instagram": "انسٹاگرام",
+    "English": "انگلش",
+    "Hindi": "ہندی",
+    "Urdu": "اردو",
+    "Spanish": "اسپینش",
+    "French": "فرنچ",
+    "Arabic": "عربی",
+    "Turkish": "ترکیش",
+    "Intelligence Terminal": "انٹیلیجنس ٹرمینل",
+    "Market Intelligence Terminal": "مارکیٹ انٹیلیجنس ٹرمینل",
+    "MIT PRO Command Center": "MIT PRO کمانڈ سینٹر",
+    "Understand The Market Before You Approach It": "مارکیٹ کے قریب جانے سے پہلے اسے سمجھیں",
+    "Intelligence • Protection • Discipline": "انٹیلیجنس • پروٹیکشن • ڈسپلن",
+    "Desktop Intelligence Terminal": "ڈیسک ٹاپ انٹیلیجنس ٹرمینل",
+    "MIT Pro combines Zeus Intelligence and Arjun Defense to help users understand market conditions with better awareness, discipline, and control.": "MIT Pro، Zeus Intelligence اور Arjun Defense کو ملا کر صارفین کو بہتر آگاہی، ڈسپلن، اور کنٹرول کے ساتھ مارکیٹ حالات سمجھنے میں مدد دیتا ہے۔",
+    "Zeus Analysis": "Zeus تجزیہ",
+    "Arjun Protection": "Arjun پروٹیکشن",
+    "Apex Core Running": "Apex Core چل رہا ہے",
+    "Decision Support Only": "صرف فیصلہ سپورٹ",
+    "No Guaranteed Results": "نتائج کی کوئی ضمانت نہیں",
+    "Enter Terminal": "ٹرمینل کھولیں",
+    "Request License": "لائسنس درخواست",
+    "Read Risk Disclaimer": "رسک ڈسکلیمر پڑھیں",
+    "System Architecture": "سسٹم آرکیٹیکچر",
+    "How MIT Pro Works": "MIT Pro کیسے کام کرتا ہے",
+    "From live conditions to decision support, MIT Pro turns market context into readable intelligence before any human decision.": "لائیو حالات سے فیصلہ سپورٹ تک، MIT Pro کسی بھی انسانی فیصلے سے پہلے مارکیٹ سیاق کو قابل فہم انٹیلیجنس میں بدلتا ہے۔",
+    "Market Conditions": "مارکیٹ حالات",
+    "Market state and live context enter the terminal.": "مارکیٹ حالت اور لائیو سیاق ٹرمینل میں داخل ہوتے ہیں۔",
+    "Zeus Intelligence": "Zeus انٹیلیجنس",
+    "Zeus reads structure, pressure, liquidity, and momentum.": "Zeus اسٹرکچر، پریشر، لیکویڈیٹی، اور مومنٹم پڑھتا ہے۔",
+    "Behavior Analysis": "رویے کا تجزیہ",
+    "Behavior patterns are reviewed for clarity and risk.": "وضاحت اور خطرے کے لیے رویے کے پیٹرنز کا جائزہ لیا جاتا ہے۔",
+    "Confidence Framework": "کانفیڈنس فریم ورک",
+    "Confidence checks help separate clear context from uncertainty.": "کانفیڈنس چیکس واضح سیاق کو غیر یقینی صورتحال سے الگ کرنے میں مدد دیتے ہیں۔",
+    "Arjun watches discipline, session health, and protection rules.": "Arjun ڈسپلن، سیشن ہیلتھ، اور پروٹیکشن رولز پر نظر رکھتا ہے۔",
+    "Human Validation": "انسانی ویلیڈیشن",
+    "The user stays in control and reviews the available intelligence.": "صارف کنٹرول میں رہتا ہے اور دستیاب انٹیلیجنس کا جائزہ لیتا ہے۔",
+    "Decision Support": "فیصلہ سپورٹ",
+    "MIT Pro supports awareness and understanding without promising outcomes.": "MIT Pro نتائج کا وعدہ کیے بغیر آگاہی اور سمجھ بوجھ کو سپورٹ کرتا ہے۔",
+    "MIT PRO Features": "MIT PRO فیچرز",
+    "Powerful Intelligence. Human-Centered Protection.": "طاقتور انٹیلیجنس۔ انسان مرکز پروٹیکشن۔",
+    "MIT Pro is designed to help users better understand market behavior through adaptive intelligence, risk awareness, educational insights, and human-layer protection.": "MIT Pro اڈاپٹو انٹیلیجنس، رسک آگاہی، تعلیمی اِن سائٹس، اور انسانی سطح کی پروٹیکشن کے ذریعے صارفین کو مارکیٹ رویہ بہتر سمجھنے میں مدد دینے کے لیے بنایا گیا ہے۔",
+    "Zeus Intelligence Core": "Zeus انٹیلیجنس کور",
+    "Intelligence Active": "انٹیلیجنس فعال",
+    "Neural Activity Active": "نیورل سرگرمی فعال",
+    "Analyzes market behavior, structure, momentum, volatility, liquidity, and confidence conditions in real time.": "مارکیٹ رویہ، اسٹرکچر، مومنٹم، وولاٹیلٹی، لیکویڈیٹی، اور کانفیڈنس حالات کا ریئل ٹائم تجزیہ کرتا ہے۔",
+    "Arjun Defense": "Arjun ڈیفنس",
+    "Arjun Protection System": "Arjun پروٹیکشن سسٹم",
+    "Protection Active": "پروٹیکشن فعال",
+    "Protection Integrity 100%": "پروٹیکشن انٹیگریٹی 100%",
+    "Promotes discipline, awareness, session health, cooldown protection, and responsible decision-making.": "ڈسپلن، آگاہی، سیشن ہیلتھ، کول ڈاؤن پروٹیکشن، اور ذمہ دار فیصلہ سازی کو فروغ دیتا ہے۔",
+    "MIT PRO Decision Support": "MIT PRO فیصلہ سپورٹ",
+    "Zeus AI Intelligence Engine": "Zeus AI انٹیلیجنس انجن",
+    "Adaptive market analysis": "اڈاپٹو مارکیٹ تجزیہ",
+    "Market state recognition": "مارکیٹ حالت شناخت",
+    "Confidence evaluation": "کانفیڈنس ایویلیوایشن",
+    "Behavioral pattern recognition": "رویے کے پیٹرن کی شناخت",
+    "Volatility assessment": "وولاٹیلٹی اسیسمنٹ",
+    "Liquidity monitoring": "لیکویڈیٹی مانیٹرنگ",
+    "Risk awareness monitoring": "رسک آگاہی مانیٹرنگ",
+    "Discipline protection": "ڈسپلن پروٹیکشن",
+    "Emotional decision detection": "جذباتی فیصلے کی شناخت",
+    "Session health monitoring": "سیشن ہیلتھ مانیٹرنگ",
+    "Cooldown protection": "کول ڈاؤن پروٹیکشن",
+    "Behavioral alerts": "رویے کے الرٹس",
+    "Live Intelligence Desk": "لائیو انٹیلیجنس ڈیسک",
+    "Live market status": "لائیو مارکیٹ اسٹیٹس",
+    "Market stability indicator": "مارکیٹ اسٹیبلٹی انڈیکیٹر",
+    "Confidence dashboard": "کانفیڈنس ڈیش بورڈ",
+    "Risk assessment overview": "رسک اسیسمنٹ اوور ویو",
+    "Session intelligence feed": "سیشن انٹیلیجنس فیڈ",
+    "Adaptive intelligence updates": "اڈاپٹو انٹیلیجنس اپ ڈیٹس",
+    "Liquidity Intelligence": "لیکویڈیٹی انٹیلیجنس",
+    "Liquidity zone identification": "لیکویڈیٹی زون شناخت",
+    "Market pressure monitoring": "مارکیٹ پریشر مانیٹرنگ",
+    "Structure awareness": "اسٹرکچر آگاہی",
+    "Market balance analysis": "مارکیٹ بیلنس تجزیہ",
+    "Dynamic liquidity mapping": "ڈائنامک لیکویڈیٹی میپنگ",
+    "Market State Detection": "مارکیٹ اسٹیٹ ڈیٹیکشن",
+    "Stable environment": "مستحکم ماحول",
+    "Expansion phase": "ایکسپینشن فیز",
+    "Consolidation phase": "کنسولیڈیشن فیز",
+    "Volatile behavior": "وولاٹائل رویہ",
+    "Protection-first Intelligence": "پروٹیکشن فرسٹ انٹیلیجنس",
+    "Important Risk Notice": "اہم رسک نوٹس",
+    "MIT Pro is not a trading bot, broker, financial advisor, or guaranteed-profit system. It provides decision-support intelligence only.": "MIT Pro ٹریڈنگ بوٹ، بروکر، مالی مشیر، یا گارنٹیڈ پرافٹ سسٹم نہیں ہے۔ یہ صرف فیصلہ سپورٹ انٹیلیجنس فراہم کرتا ہے۔",
+    "View Pricing": "پرائسنگ دیکھیں",
+    "Contact Support": "سپورٹ سے رابطہ",
+    "Choose Your MIT Pro License": "اپنا MIT Pro لائسنس منتخب کریں",
+    "Select a plan that matches your role. Every license is protected by MIT Pro's education-first, decision-support-only framework.": "اپنے کردار کے مطابق پلان منتخب کریں۔ ہر لائسنس MIT Pro کے education-first، decision-support-only فریم ورک سے محفوظ ہے۔",
+    "Most Popular": "سب سے مقبول",
+    "Start Secure License Request": "محفوظ لائسنس درخواست شروع کریں",
+    "Request Access": "رسائی درخواست",
+    "Send Message": "پیغام بھیجیں",
+    "Email": "ای میل",
+    "Full Name": "پورا نام",
+    "Phone / WhatsApp": "فون / واٹس ایپ",
+    "Country": "ملک",
+    "Message": "پیغام",
+    "Risk Disclaimer": "رسک ڈسکلیمر",
+    "Privacy Policy": "پرائیویسی پالیسی",
+    "Terms of Use": "استعمال کی شرائط",
+    "AI-assisted translation notice: Non-English content is provided for convenience using AI-assisted translation. The English version remains the official reference for MIT Pro terms, privacy, risk, and product information.": "AI کی مدد سے ترجمہ نوٹس: غیر انگریزی مواد سہولت کے لیے AI کی مدد سے فراہم کیا گیا ہے۔ MIT Pro کی شرائط، پرائیویسی، رسک، اور پروڈکٹ معلومات کے لیے انگریزی ورژن ہی سرکاری حوالہ رہے گا۔"
+  };
+
   const originals = new WeakMap();
   const ignoredTags = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "SVG", "PATH", "SYMBOL"]);
   const translationNoticeText = "AI-assisted translation notice: Non-English content is provided for convenience using AI-assisted translation. The English version remains the official reference for MIT Pro terms, privacy, risk, and product information.";
@@ -2853,8 +2968,10 @@
 
   function applyLanguage(language) {
     document.documentElement.lang = language;
-    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+    const rtlLanguage = language === "ar" || language === "ur";
+    document.documentElement.dir = rtlLanguage ? "rtl" : "ltr";
     document.body.classList.toggle("lang-hi", language === "hi");
+    document.body.classList.toggle("lang-ur", language === "ur");
     document.body.classList.toggle("lang-ar", language === "ar");
 
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
@@ -2903,7 +3020,7 @@
   }
 
   function initLanguageSwitch() {
-    const supportedLanguages = new Set(["en", "hi", "es", "fr", "ar", "tr"]);
+    const supportedLanguages = new Set(["en", "hi", "ur", "es", "fr", "ar", "tr"]);
     const saved = localStorage.getItem("mitpro-language") || "en";
     document.querySelectorAll("[data-language]").forEach((button) => {
       button.addEventListener("click", () => {

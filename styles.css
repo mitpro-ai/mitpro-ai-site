@@ -306,6 +306,35 @@ h3,
   background: #1a3c8b;
 }
 
+.flag-pk {
+  position: relative;
+  background:
+    linear-gradient(90deg, #fff 0 25%, #01411c 25%);
+}
+
+.flag-pk::before {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  left: 9px;
+  top: 2.5px;
+  border-radius: 50%;
+  box-shadow: -2px 0 0 0 #fff;
+}
+
+.flag-pk::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 4px;
+  width: 0;
+  height: 0;
+  border-left: 3px solid #fff;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+}
+
 .flag-es {
   background: linear-gradient(180deg, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75%);
 }
@@ -360,10 +389,19 @@ h3,
   font-family: Inter, "Nirmala UI", "Mangal", "Segoe UI", Arial, sans-serif;
 }
 
+.lang-ur {
+  font-family: Inter, "Noto Nastaliq Urdu", "Nirmala UI", "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
 .lang-ar {
   font-family: Inter, "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
+.lang-ur .nav,
+.lang-ur .footer,
+.lang-ur .purchase-hero,
+.lang-ur .legal-command-hero,
+.lang-ur .section-header,
 .lang-ar .nav,
 .lang-ar .footer,
 .lang-ar .purchase-hero,
@@ -372,6 +410,10 @@ h3,
   direction: rtl;
 }
 
+.lang-ur .brand,
+.lang-ur .nav-links,
+.lang-ur .purchase-hero-actions,
+.lang-ur .footer-links,
 .lang-ar .brand,
 .lang-ar .nav-links,
 .lang-ar .purchase-hero-actions,
@@ -380,27 +422,42 @@ h3,
 }
 
 .lang-hi .brand-name,
+.lang-ur .brand-name,
 .lang-ar .brand-name,
 .lang-hi h1,
+.lang-ur h1,
 .lang-ar h1,
 .lang-hi h2,
+.lang-ur h2,
 .lang-ar h2,
 .lang-hi h3,
+.lang-ur h3,
 .lang-ar h3,
 .lang-hi .section-kicker,
+.lang-ur .section-kicker,
 .lang-ar .section-kicker,
 .lang-hi .status-badge,
+.lang-ur .status-badge,
 .lang-ar .status-badge,
 .lang-hi .btn,
+.lang-ur .btn,
 .lang-ar .btn,
 .lang-hi .preview-top,
+.lang-ur .preview-top,
 .lang-ar .preview-top,
 .lang-hi .terminal-readout strong,
+.lang-ur .terminal-readout strong,
 .lang-ar .terminal-readout strong,
 .lang-hi .terminal-readout small,
+.lang-ur .terminal-readout small,
 .lang-ar .terminal-readout small,
+.lang-ur .language-switch button,
 .lang-hi .language-switch button {
   font-family: Rajdhani, "Nirmala UI", "Mangal", "Segoe UI", Arial, sans-serif;
+}
+
+.lang-ur .language-switch button {
+  font-family: Rajdhani, "Noto Nastaliq Urdu", "Nirmala UI", "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
 .lang-ar .language-switch button {
