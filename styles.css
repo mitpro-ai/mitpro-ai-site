@@ -5142,6 +5142,71 @@ textarea {
   }
 }
 
+/* Mobile Urdu typography safety pass. Urdu needs taller line boxes than Latin text,
+   especially on compact screens where headings and badges wrap. */
+@media (max-width: 760px) {
+  .lang-ur {
+    word-spacing: 0;
+  }
+
+  .lang-ur h1,
+  .lang-ur .purchase-hero h1,
+  .lang-ur .legal-command-hero h1,
+  .lang-ur .home-command-hero h1 {
+    font-size: clamp(2.05rem, 10.5vw, 3.35rem);
+    line-height: 1.38;
+    letter-spacing: 0;
+    word-spacing: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .lang-ur h2 {
+    font-size: clamp(1.55rem, 7vw, 2.3rem);
+    line-height: 1.42;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .lang-ur h3,
+  .lang-ur .section-kicker,
+  .lang-ur .status-badge,
+  .lang-ur .btn,
+  .lang-ur .preview-top,
+  .lang-ur .terminal-readout strong,
+  .lang-ur .terminal-readout small,
+  .lang-ur .license-status-strip span {
+    line-height: 1.48;
+    letter-spacing: 0;
+    word-spacing: 0;
+    white-space: normal;
+  }
+
+  .lang-ur p,
+  .lang-ur li,
+  .lang-ur .purchase-hero p,
+  .lang-ur .hero-message,
+  .lang-ur .feature-card p,
+  .lang-ur .purchase-plan p,
+  .lang-ur .legal-card p,
+  .lang-ur .activation-copy p,
+  .lang-ur .translation-notice {
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+  }
+
+  .lang-ur .language-switch button {
+    min-height: 32px;
+    padding-block: 5px;
+    line-height: 1.32;
+    letter-spacing: 0;
+  }
+
+  .lang-ur .activation-steps strong,
+  .lang-ur .activation-steps small {
+    line-height: 1.55;
+  }
+}
+
 /* Final activation-row safety pass for RTL languages. Keeps status labels from overlapping Urdu/Arabic text. */
 .activation-steps article {
   min-height: 58px;
