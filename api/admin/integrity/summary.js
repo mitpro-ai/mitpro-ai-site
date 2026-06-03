@@ -1,4 +1,4 @@
-const { getSessionUser, sendJson, supabaseRows } = require("../../../_lib/partner-data");
+const { getSessionUser, sendJson, supabaseRows } = require("../../_lib/partner-data");
 
 function countBy(rows, key) {
   const out = {};

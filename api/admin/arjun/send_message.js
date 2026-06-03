@@ -1,4 +1,4 @@
-const { getSessionUser, sendJson } = require("../../../_lib/partner-data");
+const { getSessionUser, sendJson } = require("../../_lib/partner-data");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return sendJson(res, 405, { ok: false, error: "Method not allowed." });
