@@ -63,6 +63,14 @@ function normalizeEmail(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+function demoLoginEnabled() {
+  return String(process.env.MITPRO_ENABLE_DEMO_LOGIN || "").toLowerCase() === "true";
+}
+
+function isDemoEmail(value) {
+  return normalizeEmail(value).endsWith("@mitpro.local");
+}
+
 function secret() {
   return process.env.MITPRO_WEB_SESSION_SECRET || process.env.MITPRO_SUPABASE_SERVICE_KEY || "mitpro-web-dev-session";
 }
@@ -129,6 +137,7 @@ function getSessionUser(req) {
   try {
     const data = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
     if (!data.exp || data.exp < Math.floor(Date.now() / 1000)) return null;
+    if (isDemoEmail(data.email) && !demoLoginEnabled()) return null;
     const role = String(data.role || "USER").toUpperCase();
     if (!ROLE_SET.has(role)) return null;
     return publicUser(data);
@@ -207,8 +216,10 @@ module.exports = {
   clearSession,
   cloudConfig,
   countBy,
+  demoLoginEnabled,
   daysUntil,
   getSessionUser,
+  isDemoEmail,
   isMaster,
   normalizeEmail,
   planName,

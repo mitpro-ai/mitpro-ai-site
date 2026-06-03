@@ -2,6 +2,7 @@ const {
   DEMO_PASSWORD,
   DEMO_USERS,
   ROLE_SET,
+  demoLoginEnabled,
   normalizeEmail,
   publicUser,
   sendJson,
@@ -28,7 +29,7 @@ module.exports = async function handler(req, res) {
   }
 
   let user = null;
-  if (DEMO_USERS[email] && password === DEMO_PASSWORD) {
+  if (DEMO_USERS[email] && demoLoginEnabled() && password === DEMO_PASSWORD) {
     user = DEMO_USERS[email];
   }
 
