@@ -3068,7 +3068,9 @@
     "License Activation Chamber": "لائسنس ایکٹیویشن چیمبر",
     "LICENSE ACTIVATION": "لائسنس ایکٹیویشن",
     "Request": "درخواست",
+    "Waiting for user details": "یوزر تفصیلات کا انتظار",
     "Verify": "تصدیق",
+    "USDT reference reviewed safely": "USDT حوالہ محفوظ طریقے سے ریویو کیا گیا",
     "User details received": "یوزر تفصیلات موصول",
     "Manual review active": "مینول ریویو فعال",
     "Arjun Security Check": "Arjun سیکیورٹی چیک",
@@ -3195,6 +3197,10 @@
     "OTC trap suite": "OTC ٹریپ سوٹ",
     "CORE ONLY": "صرف کور",
     "PROTECTION": "پروٹیکشن"
+  });
+  Object.assign(translations.ar, {
+    "Verify": "تحقق",
+    "USDT reference reviewed safely": "تمت مراجعة مرجع USDT بأمان"
   });
 
   const originals = new WeakMap();

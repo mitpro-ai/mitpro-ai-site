@@ -2740,7 +2740,12 @@ button.license-signal {
 
 .activation-steps article {
   position: relative;
-  padding: 10px 12px 10px 34px;
+  min-height: 58px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) 82px;
+  gap: 10px;
+  align-items: center;
   border: 1px solid rgba(102, 255, 240, 0.16);
   border-radius: 10px;
   background: rgba(3, 10, 12, 0.52);
@@ -2748,22 +2753,26 @@ button.license-signal {
 
 .activation-steps article::after {
   content: "Waiting";
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  position: static;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  justify-self: end;
+  align-self: start;
   color: rgba(216, 255, 251, 0.62);
   font-family: Rajdhani, "Segoe UI", Arial, sans-serif;
   font-size: 0.7rem;
   font-weight: 900;
   letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: end;
   text-transform: uppercase;
 }
 
 .activation-steps article::before {
   content: "";
-  position: absolute;
-  left: 12px;
-  top: 15px;
+  position: static;
+  grid-column: 1;
+  grid-row: 1 / span 2;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -2800,9 +2809,55 @@ button.license-signal {
   background: #2cffb1;
 }
 
+.lang-ar .activation-steps article,
+.lang-ur .activation-steps article {
+  grid-template-columns: 12px minmax(0, 1fr) 96px;
+  direction: rtl;
+}
+
+.lang-ar .activation-steps article::before,
+.lang-ur .activation-steps article::before {
+  grid-column: 1;
+}
+
+.lang-ar .activation-steps article::after,
+.lang-ur .activation-steps article::after {
+  grid-column: 3;
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  line-height: 1.1;
+  white-space: normal;
+}
+
+.lang-ar .activation-steps article::after {
+  content: "انتظار";
+}
+
+.lang-ar .activation-steps article.step-current::after {
+  content: "قيد المعالجة";
+}
+
+.lang-ar .activation-steps article.step-complete::after {
+  content: "مكتمل";
+}
+
+.lang-ur .activation-steps article::after {
+  content: "انتظار";
+}
+
+.lang-ur .activation-steps article.step-current::after {
+  content: "پروسیسنگ";
+}
+
+.lang-ur .activation-steps article.step-complete::after {
+  content: "مکمل";
+}
+
 .activation-steps strong,
 .activation-steps small {
   display: block;
+  grid-column: 2;
+  min-width: 0;
 }
 
 .activation-steps strong {
@@ -5085,4 +5140,73 @@ textarea {
   .footer-links {
     justify-content: flex-start;
   }
+}
+
+/* Final activation-row safety pass for RTL languages. Keeps status labels from overlapping Urdu/Arabic text. */
+.activation-steps article {
+  min-height: 58px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) 82px;
+  gap: 10px;
+  align-items: center;
+}
+
+.activation-steps article::before {
+  position: static;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+.activation-steps article::after {
+  position: static;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  justify-self: end;
+  align-self: start;
+  text-align: end;
+  line-height: 1.1;
+}
+
+.activation-steps strong,
+.activation-steps small {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.lang-ar .activation-steps article,
+.lang-ur .activation-steps article {
+  grid-template-columns: 12px minmax(0, 1fr) 96px;
+  direction: rtl;
+}
+
+.lang-ar .activation-steps article::after,
+.lang-ur .activation-steps article::after {
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  white-space: normal;
+}
+
+.lang-ar .activation-steps article::after {
+  content: "انتظار";
+}
+
+.lang-ar .activation-steps article.step-current::after {
+  content: "قيد المعالجة";
+}
+
+.lang-ar .activation-steps article.step-complete::after {
+  content: "مكتمل";
+}
+
+.lang-ur .activation-steps article::after {
+  content: "انتظار";
+}
+
+.lang-ur .activation-steps article.step-current::after {
+  content: "پروسیسنگ";
+}
+
+.lang-ur .activation-steps article.step-complete::after {
+  content: "مکمل";
 }
