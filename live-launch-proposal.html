@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MIT PRO V2 Is Live | Launch Proposal</title>
+  <meta name="description" content="Premium launch proposal for MIT PRO V2 live announcement.">
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #030707;
+      --panel: rgba(11, 25, 24, 0.78);
+      --panel-strong: rgba(16, 38, 36, 0.9);
+      --line: rgba(97, 255, 215, 0.2);
+      --line-strong: rgba(97, 255, 215, 0.48);
+      --text: #effffb;
+      --muted: #9db8b2;
+      --teal: #2cffb4;
+      --cyan: #66fff0;
+      --gold: #f2c76b;
+      --danger: #ff6c83;
+      --shadow: 0 32px 120px rgba(0, 0, 0, 0.62);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 76% 34%, rgba(44, 255, 180, 0.2), transparent 28%),
+        radial-gradient(circle at 18% 18%, rgba(102, 255, 240, 0.16), transparent 26%),
+        radial-gradient(circle at 68% 76%, rgba(242, 199, 107, 0.12), transparent 22%),
+        linear-gradient(135deg, #020505 0%, #061313 48%, #030407 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(102, 255, 240, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(102, 255, 240, 0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(circle at 50% 35%, black, transparent 76%);
+      opacity: 0.65;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(110deg, transparent 0 30%, rgba(102, 255, 240, 0.08) 38%, transparent 48%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 5px);
+      opacity: 0.5;
+      mix-blend-mode: screen;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: min(1220px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .live-ribbon {
+      margin: 18px auto 0;
+      border: 1px solid rgba(242, 199, 107, 0.35);
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, rgba(242, 199, 107, 0.14), rgba(44, 255, 180, 0.08), rgba(7, 17, 17, 0.72)),
+        rgba(8, 19, 18, 0.86);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.42);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #f8e4aa;
+      font: 800 13px/1 Rajdhani, "Segoe UI", sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0 0 rgba(44, 255, 180, 0.55), 0 0 24px rgba(44, 255, 180, 0.85);
+      animation: pulse 1.8s ease-out infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(44, 255, 180, 0.55), 0 0 24px rgba(44, 255, 180, 0.75); }
+      70% { box-shadow: 0 0 0 12px rgba(44, 255, 180, 0), 0 0 24px rgba(44, 255, 180, 0.75); }
+      100% { box-shadow: 0 0 0 0 rgba(44, 255, 180, 0), 0 0 24px rgba(44, 255, 180, 0.75); }
+    }
+
+    .nav {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(120deg, rgba(20, 49, 49, 0.9), rgba(4, 10, 12, 0.84)),
+        rgba(5, 12, 14, 0.8);
+      box-shadow: 0 18px 58px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      border-radius: 8px;
+      padding: 3px;
+      background: rgba(3, 10, 12, 0.78);
+      box-shadow: 0 0 34px rgba(102, 255, 240, 0.28);
+    }
+
+    .brand strong,
+    h1,
+    .eyebrow,
+    .btn,
+    .status-title,
+    .metric strong {
+      font-family: Rajdhani, "Segoe UI", Arial, sans-serif;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 28px;
+      line-height: 0.95;
+      letter-spacing: 0.08em;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 5px;
+      color: #7dffe2;
+      font: 800 11px/1 Rajdhani, "Segoe UI", sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      max-width: 420px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #cce5de;
+      font-weight: 800;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .nav-links a {
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .nav-links .access {
+      color: #04100d;
+      background: linear-gradient(135deg, var(--teal), #96ffe9);
+      border-color: rgba(102, 255, 240, 0.7);
+      box-shadow: 0 0 28px rgba(44, 255, 180, 0.22);
+    }
+
+    .hero {
+      position: relative;
+      min-height: calc(100vh - 132px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(360px, 0.78fr);
+      align-items: center;
+      gap: 42px;
+      padding: 72px 0 54px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      right: -100px;
+      top: 92px;
+      width: 520px;
+      height: 520px;
+      border: 1px solid rgba(102, 255, 240, 0.13);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 80px rgba(102, 255, 240, 0.025),
+        0 0 0 156px rgba(242, 199, 107, 0.02),
+        inset 0 0 60px rgba(44, 255, 180, 0.05);
+      pointer-events: none;
+    }
+
+    .copy {
+      position: relative;
+      max-width: 720px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      color: var(--gold);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 42px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(56px, 9vw, 112px);
+      line-height: 0.84;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 span {
+      display: block;
+      color: var(--teal);
+      text-shadow: 0 0 34px rgba(44, 255, 180, 0.28);
+    }
+
+    .lead {
+      max-width: 680px;
+      margin: 28px 0 0;
+      color: #c7ded8;
+      font-size: 22px;
+      line-height: 1.76;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .launch-principles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+      color: #f4d58e;
+      font: 800 14px/1 Rajdhani, "Segoe UI", Arial, sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .launch-principles span {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .launch-principles span:not(:last-child)::after {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 16px rgba(44, 255, 180, 0.64);
+    }
+
+    .discipline-line {
+      margin: 10px 0 0;
+      color: #9fb8b5;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .btn {
+      min-width: 172px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 14px 22px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .btn.primary {
+      color: #04100d;
+      background: linear-gradient(135deg, var(--teal), #a8fff0);
+      border-color: rgba(102, 255, 240, 0.84);
+      box-shadow: 0 18px 50px rgba(44, 255, 180, 0.22);
+    }
+
+    .btn.secondary {
+      color: #f7ddb0;
+      background: rgba(242, 199, 107, 0.08);
+      border-color: rgba(242, 199, 107, 0.36);
+    }
+
+    .trust-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 44px;
+      max-width: 670px;
+    }
+
+    .metric {
+      border: 1px solid rgba(102, 255, 240, 0.16);
+      border-radius: 8px;
+      padding: 16px;
+      background: rgba(8, 20, 19, 0.62);
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--teal);
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: 0.04em;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-panel {
+      position: relative;
+      border: 1px solid rgba(102, 255, 240, 0.22);
+      border-radius: 8px;
+      padding: 22px;
+      background:
+        linear-gradient(155deg, rgba(17, 39, 37, 0.94), rgba(5, 12, 13, 0.9)),
+        rgba(7, 18, 18, 0.88);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.055);
+      overflow: hidden;
+    }
+
+    .status-panel::before {
+      content: "";
+      position: absolute;
+      inset: -120px -140px auto auto;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(44, 255, 180, 0.2), transparent 62%);
+      pointer-events: none;
+    }
+
+    .panel-head {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(102, 255, 240, 0.16);
+    }
+
+    .status-title {
+      color: #f6d58d;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(44, 255, 180, 0.38);
+      border-radius: 999px;
+      padding: 8px 11px;
+      color: var(--teal);
+      background: rgba(44, 255, 180, 0.07);
+      font: 800 12px/1 Rajdhani, sans-serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .status-list {
+      position: relative;
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 78px;
+      border: 1px solid rgba(102, 255, 240, 0.13);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .status-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #04100d;
+      background: linear-gradient(135deg, var(--teal), #b9fff2);
+      font-weight: 900;
+      box-shadow: 0 0 24px rgba(44, 255, 180, 0.22);
+    }
+
+    .status-row strong {
+      display: block;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+
+    .status-row span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status-row em {
+      color: var(--teal);
+      font-style: normal;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .core-visual {
+      position: relative;
+      min-height: 250px;
+      margin-top: 18px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(242, 199, 107, 0.22);
+      border-radius: 8px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at center, rgba(44, 255, 180, 0.16), transparent 34%),
+        linear-gradient(135deg, rgba(242, 199, 107, 0.08), rgba(102, 255, 240, 0.04));
+    }
+
+    .core-visual::before,
+    .core-visual::after {
+      content: "";
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border: 1px solid rgba(102, 255, 240, 0.22);
+      border-radius: 50%;
+    }
+
+    .core-visual::after {
+      width: 170px;
+      height: 170px;
+      border-color: rgba(242, 199, 107, 0.2);
+    }
+
+    .core-visual img {
+      position: relative;
+      z-index: 1;
+      width: 128px;
+      height: 128px;
+      object-fit: contain;
+      border-radius: 8px;
+      filter: drop-shadow(0 0 28px rgba(44, 255, 180, 0.28));
+    }
+
+    .terminal-note {
+      margin: 18px 0 0;
+      color: #d9c58d;
+      font: 800 14px/1.5 Rajdhani, "Segoe UI", Arial, sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 920px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-links {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding-top: 46px;
+      }
+
+      .hero::before {
+        right: -220px;
+        top: 320px;
+      }
+
+      .trust-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .live-ribbon {
+        align-items: flex-start;
+        justify-content: flex-start;
+        font-size: 12px;
+        line-height: 1.25;
+      }
+
+      .brand img {
+        width: 48px;
+        height: 48px;
+      }
+
+      .brand strong {
+        font-size: 24px;
+      }
+
+      .brand span {
+        max-width: 260px;
+      }
+
+      .lead {
+        font-size: 17px;
+      }
+
+      .actions,
+      .btn {
+        width: 100%;
+      }
+
+      .status-row {
+        grid-template-columns: 36px 1fr;
+      }
+
+      .status-row em {
+        grid-column: 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="live-ribbon" aria-label="MIT PRO live announcement">
+      <span class="pulse" aria-hidden="true"></span>
+      <span>MIT Pro V2 Is Live &bull; Early Access Available</span>
+    </div>
+
+    <header class="nav">
+      <a class="brand" href="index.html" aria-label="MIT PRO home">
+        <img src="assets/mitpro-logo.png" alt="MIT PRO logo">
+        <span>
+          <strong>MIT PRO</strong>
+          <span>Adaptive Market Intelligence</span>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Proposal navigation">
+        <a href="index.html">Home</a>
+        <a href="purchase.html">Pricing</a>
+        <a href="risk-disclaimer.html">Risk</a>
+        <a href="/partner">Login</a>
+        <a class="access" href="purchase.html">Secure Access</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <section class="copy" aria-labelledby="launch-title">
+        <div class="eyebrow">Premium Launch Flash</div>
+        <h1 id="launch-title">MIT PRO V2 <span>IS LIVE</span></h1>
+        <p class="lead">This is more than a platform launch. It is the next step in our mission to promote awareness, discipline, and informed decision-making through Adaptive Market Intelligence and Human-Centered Protection.</p>
+        <div class="actions" aria-label="Launch actions">
+          <a class="btn primary" href="purchase.html">Secure Access</a>
+          <a class="btn secondary" href="index.html#features">Explore Platform</a>
+        </div>
+        <div class="launch-principles" aria-label="MIT PRO principles">
+          <span>Education First</span>
+          <span>Awareness First</span>
+          <span>Protection First</span>
+        </div>
+        <p class="discipline-line">Built for Awareness. Designed for Discipline.</p>
+        <div class="trust-row" aria-label="Launch highlights">
+          <div class="metric">
+            <strong>V2</strong>
+            <span>Live Terminal</span>
+          </div>
+          <div class="metric">
+            <strong>24/7</strong>
+            <span>License Cloud</span>
+          </div>
+          <div class="metric">
+            <strong>AI</strong>
+            <span>Human-Centered Protection</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="status-panel" aria-label="MIT PRO live system status">
+        <div class="panel-head">
+          <div class="status-title">System Status</div>
+          <div class="live-pill"><span class="pulse" aria-hidden="true"></span> Online</div>
+        </div>
+        <div class="status-list">
+          <div class="status-row">
+            <div class="status-icon">L</div>
+            <div>
+              <strong>License Cloud</strong>
+              <span>Secure account activation is open</span>
+            </div>
+            <em>Online</em>
+          </div>
+          <div class="status-row">
+            <div class="status-icon">Z</div>
+            <div>
+              <strong>Zeus AI</strong>
+              <span>Market intelligence core is ready</span>
+            </div>
+            <em>Ready</em>
+          </div>
+          <div class="status-row">
+            <div class="status-icon">A</div>
+            <div>
+              <strong>Arjun Protect</strong>
+              <span>Protection layer active for users</span>
+            </div>
+            <em>Active</em>
+          </div>
+          <div class="status-row">
+            <div class="status-icon">V2</div>
+            <div>
+              <strong>MIT Pro V2</strong>
+              <span>Launch access is open for selected users</span>
+            </div>
+            <em>Live</em>
+          </div>
+        </div>
+        <div class="core-visual" aria-hidden="true">
+          <img src="assets/mitpro-logo.png" alt="">
+        </div>
+        <p class="terminal-note">Adaptive Market Intelligence &amp; Human-Centered Protection Terminal</p>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>
