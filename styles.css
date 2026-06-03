@@ -241,10 +241,13 @@ h3,
 .language-switch {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 4px;
+  max-width: min(100%, 460px);
   padding: 3px;
   border: 1px solid rgba(102, 255, 240, 0.22);
-  border-radius: 999px;
+  border-radius: 14px;
   background: rgba(3, 10, 12, 0.58);
 }
 
@@ -252,14 +255,14 @@ h3,
   min-height: 28px;
   border: 0;
   border-radius: 999px;
-  padding: 0 10px;
+  padding: 0 8px;
   color: #cce4e1;
   background: transparent;
   display: inline-flex;
   align-items: center;
   gap: 7px;
   font-family: Rajdhani, "Segoe UI", Arial, sans-serif;
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   font-weight: 900;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -391,6 +394,26 @@ h3,
 
 .lang-ur {
   font-family: Inter, "Noto Nastaliq Urdu", "Nirmala UI", "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+.lang-ur h1,
+.lang-ur .purchase-hero h1,
+.lang-ur .legal-command-hero h1 {
+  font-size: clamp(2.6rem, 6vw, 5.7rem);
+  line-height: 1.16;
+  text-transform: none;
+}
+
+.lang-ur h2 {
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.lang-ur h3,
+.lang-ur .section-kicker,
+.lang-ur .status-badge,
+.lang-ur .btn {
+  line-height: 1.25;
 }
 
 .lang-ar {
