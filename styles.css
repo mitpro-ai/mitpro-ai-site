@@ -17,6 +17,7 @@
   --danger: #ff5d72;
   --shadow: 0 30px 110px rgba(0, 0, 0, 0.58);
   --radius: 8px;
+  --font-urdu: "Noto Nastaliq Urdu", "Nirmala UI", "Segoe UI", Tahoma, Arial, sans-serif;
 }
 
 * {
@@ -393,7 +394,7 @@ h3,
 }
 
 .lang-ur {
-  font-family: Inter, "Noto Nastaliq Urdu", "Nirmala UI", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--font-urdu);
 }
 
 .lang-ur h1,
@@ -480,11 +481,41 @@ h3,
 }
 
 .lang-ur .language-switch button {
-  font-family: Rajdhani, "Noto Nastaliq Urdu", "Nirmala UI", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--font-urdu);
 }
 
 .lang-ar .language-switch button {
   font-family: Rajdhani, "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+body.lang-ur h1,
+body.lang-ur h2,
+body.lang-ur h3,
+body.lang-ur h4,
+body.lang-ur p,
+body.lang-ur li,
+body.lang-ur a,
+body.lang-ur button,
+body.lang-ur label,
+body.lang-ur input,
+body.lang-ur textarea,
+body.lang-ur small,
+body.lang-ur strong,
+body.lang-ur em,
+body.lang-ur .btn,
+body.lang-ur .status-badge,
+body.lang-ur .section-kicker,
+body.lang-ur .preview-top,
+body.lang-ur .terminal-readout strong,
+body.lang-ur .terminal-readout small,
+body.lang-ur .translation-notice,
+body.lang-ur .license-status-strip span {
+  font-family: var(--font-urdu);
+}
+
+body.lang-ur .brand-name,
+body.lang-ur .brand-sub {
+  font-family: Rajdhani, "Segoe UI", Arial, sans-serif;
 }
 
 .translation-notice {
@@ -5153,16 +5184,16 @@ textarea {
   .lang-ur .purchase-hero h1,
   .lang-ur .legal-command-hero h1,
   .lang-ur .home-command-hero h1 {
-    font-size: clamp(2.05rem, 10.5vw, 3.35rem);
-    line-height: 1.38;
+    font-size: clamp(1.95rem, 9.5vw, 3.05rem);
+    line-height: 1.62;
     letter-spacing: 0;
     word-spacing: 0;
     overflow-wrap: anywhere;
   }
 
   .lang-ur h2 {
-    font-size: clamp(1.55rem, 7vw, 2.3rem);
-    line-height: 1.42;
+    font-size: clamp(1.45rem, 6.4vw, 2.05rem);
+    line-height: 1.58;
     letter-spacing: 0;
     overflow-wrap: anywhere;
   }
@@ -5173,9 +5204,9 @@ textarea {
   .lang-ur .btn,
   .lang-ur .preview-top,
   .lang-ur .terminal-readout strong,
-  .lang-ur .terminal-readout small,
-  .lang-ur .license-status-strip span {
-    line-height: 1.48;
+    .lang-ur .terminal-readout small,
+    .lang-ur .license-status-strip span {
+    line-height: 1.68;
     letter-spacing: 0;
     word-spacing: 0;
     white-space: normal;
@@ -5188,22 +5219,22 @@ textarea {
   .lang-ur .feature-card p,
   .lang-ur .purchase-plan p,
   .lang-ur .legal-card p,
-  .lang-ur .activation-copy p,
-  .lang-ur .translation-notice {
-    line-height: 1.9;
+    .lang-ur .activation-copy p,
+    .lang-ur .translation-notice {
+    line-height: 2.05;
     overflow-wrap: anywhere;
   }
 
   .lang-ur .language-switch button {
     min-height: 32px;
     padding-block: 5px;
-    line-height: 1.32;
+    line-height: 1.52;
     letter-spacing: 0;
   }
 
   .lang-ur .activation-steps strong,
   .lang-ur .activation-steps small {
-    line-height: 1.55;
+    line-height: 1.76;
   }
 }
 
