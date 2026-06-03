@@ -17,7 +17,9 @@
   --danger: #ff5d72;
   --shadow: 0 30px 110px rgba(0, 0, 0, 0.58);
   --radius: 8px;
-  --font-urdu: "Noto Nastaliq Urdu", "Nirmala UI", "Segoe UI", Tahoma, Arial, sans-serif;
+  --font-rtl: "Noto Naskh Arabic", "Nirmala UI", "Segoe UI", Tahoma, Arial, sans-serif;
+  --font-urdu: var(--font-rtl);
+  --font-arabic: var(--font-rtl);
 }
 
 * {
@@ -418,7 +420,7 @@ h3,
 }
 
 .lang-ar {
-  font-family: Inter, "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--font-arabic);
 }
 
 .lang-ur .nav,
@@ -485,7 +487,7 @@ h3,
 }
 
 .lang-ar .language-switch button {
-  font-family: Rajdhani, "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--font-arabic);
 }
 
 body.lang-ur h1,
@@ -509,12 +511,36 @@ body.lang-ur .preview-top,
 body.lang-ur .terminal-readout strong,
 body.lang-ur .terminal-readout small,
 body.lang-ur .translation-notice,
-body.lang-ur .license-status-strip span {
-  font-family: var(--font-urdu);
+body.lang-ur .license-status-strip span,
+body.lang-ar h1,
+body.lang-ar h2,
+body.lang-ar h3,
+body.lang-ar h4,
+body.lang-ar p,
+body.lang-ar li,
+body.lang-ar a,
+body.lang-ar button,
+body.lang-ar label,
+body.lang-ar input,
+body.lang-ar textarea,
+body.lang-ar small,
+body.lang-ar strong,
+body.lang-ar em,
+body.lang-ar .btn,
+body.lang-ar .status-badge,
+body.lang-ar .section-kicker,
+body.lang-ar .preview-top,
+body.lang-ar .terminal-readout strong,
+body.lang-ar .terminal-readout small,
+body.lang-ar .translation-notice,
+body.lang-ar .license-status-strip span {
+  font-family: var(--font-rtl);
 }
 
 body.lang-ur .brand-name,
-body.lang-ur .brand-sub {
+body.lang-ur .brand-sub,
+body.lang-ar .brand-name,
+body.lang-ar .brand-sub {
   font-family: Rajdhani, "Segoe UI", Arial, sans-serif;
 }
 
@@ -5176,24 +5202,30 @@ textarea {
 /* Mobile Urdu typography safety pass. Urdu needs taller line boxes than Latin text,
    especially on compact screens where headings and badges wrap. */
 @media (max-width: 760px) {
-  .lang-ur {
+  .lang-ur,
+  .lang-ar {
     word-spacing: 0;
   }
 
   .lang-ur h1,
   .lang-ur .purchase-hero h1,
   .lang-ur .legal-command-hero h1,
-  .lang-ur .home-command-hero h1 {
-    font-size: clamp(1.95rem, 9.5vw, 3.05rem);
-    line-height: 1.62;
+  .lang-ur .home-command-hero h1,
+  .lang-ar h1,
+  .lang-ar .purchase-hero h1,
+  .lang-ar .legal-command-hero h1,
+  .lang-ar .home-command-hero h1 {
+    font-size: clamp(2.1rem, 10vw, 3.25rem);
+    line-height: 1.26;
     letter-spacing: 0;
     word-spacing: 0;
     overflow-wrap: anywhere;
   }
 
-  .lang-ur h2 {
-    font-size: clamp(1.45rem, 6.4vw, 2.05rem);
-    line-height: 1.58;
+  .lang-ur h2,
+  .lang-ar h2 {
+    font-size: clamp(1.5rem, 6.6vw, 2.15rem);
+    line-height: 1.3;
     letter-spacing: 0;
     overflow-wrap: anywhere;
   }
@@ -5204,9 +5236,17 @@ textarea {
   .lang-ur .btn,
   .lang-ur .preview-top,
   .lang-ur .terminal-readout strong,
-    .lang-ur .terminal-readout small,
-    .lang-ur .license-status-strip span {
-    line-height: 1.68;
+  .lang-ur .terminal-readout small,
+  .lang-ur .license-status-strip span,
+  .lang-ar h3,
+  .lang-ar .section-kicker,
+  .lang-ar .status-badge,
+  .lang-ar .btn,
+  .lang-ar .preview-top,
+  .lang-ar .terminal-readout strong,
+  .lang-ar .terminal-readout small,
+  .lang-ar .license-status-strip span {
+    line-height: 1.38;
     letter-spacing: 0;
     word-spacing: 0;
     white-space: normal;
@@ -5219,22 +5259,85 @@ textarea {
   .lang-ur .feature-card p,
   .lang-ur .purchase-plan p,
   .lang-ur .legal-card p,
-    .lang-ur .activation-copy p,
-    .lang-ur .translation-notice {
-    line-height: 2.05;
+  .lang-ur .activation-copy p,
+  .lang-ur .translation-notice,
+  .lang-ar p,
+  .lang-ar li,
+  .lang-ar .purchase-hero p,
+  .lang-ar .hero-message,
+  .lang-ar .feature-card p,
+  .lang-ar .purchase-plan p,
+  .lang-ar .legal-card p,
+  .lang-ar .activation-copy p,
+  .lang-ar .translation-notice {
+    line-height: 1.62;
     overflow-wrap: anywhere;
   }
 
-  .lang-ur .language-switch button {
+  .lang-ur .language-switch button,
+  .lang-ar .language-switch button {
     min-height: 32px;
     padding-block: 5px;
-    line-height: 1.52;
+    line-height: 1.28;
     letter-spacing: 0;
   }
 
   .lang-ur .activation-steps strong,
-  .lang-ur .activation-steps small {
-    line-height: 1.76;
+  .lang-ur .activation-steps small,
+  .lang-ar .activation-steps strong,
+  .lang-ar .activation-steps small {
+    line-height: 1.42;
+  }
+
+  .lang-ur .purchase-hero,
+  .lang-ur .section,
+  .lang-ur .purchase-card,
+  .lang-ar .purchase-hero,
+  .lang-ar .section,
+  .lang-ar .purchase-card {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .lang-ur .purchase-hero-copy,
+  .lang-ur .purchase-hero-actions,
+  .lang-ur .language-switch,
+  .lang-ur .nav-links,
+  .lang-ar .purchase-hero-copy,
+  .lang-ar .purchase-hero-actions,
+  .lang-ar .language-switch,
+  .lang-ar .nav-links {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .license-core {
+    overflow: hidden;
+  }
+
+  .license-orbit {
+    max-width: calc(100% - 36px);
+  }
+
+  .orbit-a {
+    width: min(260px, 68vw);
+  }
+
+  .reactor-token {
+    width: min(280px, 72vw);
+    overflow: hidden;
+  }
+
+  .reactor-token img {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-frame img,
+  .product-frame-large img,
+  .product-frame-small img {
+    transform: none;
   }
 }
 
