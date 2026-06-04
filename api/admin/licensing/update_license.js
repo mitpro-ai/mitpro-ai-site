@@ -2,6 +2,7 @@ const {
   canManageLicenses,
   cloudConfig,
   getSessionUser,
+  isMaster,
   normalizeEmail,
   sendJson,
 } = require("../../_lib/partner-data");
@@ -17,6 +18,12 @@ function query(params) {
 function normalizeStatus(value) {
   const status = String(value || "").trim().toLowerCase();
   if (["active", "suspended", "blocked"].includes(status)) return status;
+  return "";
+}
+
+function normalizePlan(value) {
+  const plan = String(value || "").trim().toUpperCase();
+  if (["TRIAL", "BASIC", "PRO", "ELITE"].includes(plan)) return plan;
   return "";
 }
 
@@ -85,10 +92,13 @@ module.exports = async function handler(req, res) {
     const licenseKey = String(body.license_key || "").trim().toUpperCase();
     const reason = String(body.justification || body.reason || body.payment_note || "").trim().slice(0, 500);
     const requestedStatus = normalizeStatus(body.status);
+    const requestedPlan = normalizePlan(body.plan_code);
     const extendDays = clampDays(body.extend_days);
 
     if (!licenseKey) return sendJson(res, 400, { ok: false, error: "License key is required." });
-    if (!requestedStatus && !extendDays) return sendJson(res, 400, { ok: false, error: "Choose a license action first." });
+    if (!requestedStatus && !requestedPlan && !extendDays) return sendJson(res, 400, { ok: false, error: "Choose a license action first." });
+    if (body.plan_code && !requestedPlan) return sendJson(res, 400, { ok: false, error: "Plan must be TRIAL, BASIC, PRO, or ELITE." });
+    if (requestedPlan && !isMaster(user)) return sendJson(res, 403, { ok: false, error: "MASTER access required to upgrade or downgrade a license." });
     if (!reason) return sendJson(res, 400, { ok: false, error: "Justification is required for license changes." });
 
     const licenseRow = await getLicense(licenseKey);
@@ -101,6 +111,12 @@ module.exports = async function handler(req, res) {
     if (requestedStatus) {
       patch.status = requestedStatus;
       details.new_status = requestedStatus;
+    }
+
+    if (requestedPlan) {
+      patch.plan_code = requestedPlan;
+      details.previous_plan = licenseRow.plan_code || "";
+      details.new_plan = requestedPlan;
     }
 
     if (extendDays) {
@@ -117,17 +133,26 @@ module.exports = async function handler(req, res) {
 
     const updatedRows = await supabaseRequest("PATCH", "user_licenses", patch, query({ license_key: `eq.${licenseKey}` }));
 
-    if (requestedStatus && licenseRow.email) {
+    if ((requestedStatus || requestedPlan) && licenseRow.email) {
+      const userPatch = { updated_at: now };
+      if (requestedStatus) userPatch.status = requestedStatus === "active" ? "active" : requestedStatus;
+      if (requestedPlan) userPatch.plan_code = requestedPlan;
       await supabaseRequest("PATCH", "users", {
-        status: requestedStatus === "active" ? "active" : requestedStatus,
-        updated_at: now,
+        ...userPatch,
       }, query({ email: `eq.${normalizeEmail(licenseRow.email)}` })).catch(() => []);
     }
 
+    const actionType = extendDays
+      ? "WEB_PARTNER_LICENSE_RENEW"
+      : requestedPlan
+        ? "WEB_PARTNER_LICENSE_PLAN"
+        : "WEB_PARTNER_LICENSE_STATUS";
     await writeEvent(user, licenseRow, {
-      event_type: extendDays ? "WEB_PARTNER_LICENSE_RENEW" : "WEB_PARTNER_LICENSE_STATUS",
+      event_type: actionType,
       message: extendDays
         ? `License ${licenseKey} renewed for ${extendDays} day(s)`
+        : requestedPlan
+          ? `License ${licenseKey} changed to ${requestedPlan}`
         : `License ${licenseKey} changed to ${requestedStatus}`,
       status: patch.status || licenseRow.status || "active",
       details,
@@ -137,6 +162,7 @@ module.exports = async function handler(req, res) {
       ok: true,
       license_key: licenseKey,
       status: patch.status || licenseRow.status,
+      plan_code: patch.plan_code || licenseRow.plan_code,
       expiry_date: patch.expiry_date || licenseRow.expiry_date,
       rows: updatedRows,
     });
