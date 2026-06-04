@@ -11,12 +11,13 @@ module.exports = async function handler(req, res) {
   const user = getSessionUser(req);
   if (!user || !canManageLicenses(user)) return sendJson(res, 403, { ok: false, error: "License support access required." });
   const master = isMaster(user);
-  const [plans, features, users, licenses, devices, events, referrals, commissions] = await Promise.all([
+  const [plans, features, users, licenses, devices, agreements, events, referrals, commissions] = await Promise.all([
     supabaseRows("license_plans", "select=*&order=plan_code.asc&limit=80"),
     master ? supabaseRows("plan_features", "select=*&order=plan_code.asc&limit=300") : Promise.resolve([]),
     supabaseRows("users", "select=*&order=created_at.desc&limit=300"),
     supabaseRows("user_licenses", "select=*&order=created_at.desc&limit=500"),
     supabaseRows("user_devices", "select=*&order=last_seen.desc&limit=500"),
+    supabaseRows("user_agreements", "select=*&order=accepted_at.desc&limit=500"),
     supabaseRows("license_events", "select=*&order=created_at.desc&limit=300"),
     master ? supabaseRows("employee_referrals", "select=*&order=employee_name.asc&limit=300") : Promise.resolve([]),
     master ? supabaseRows("referral_transactions", "select=*&order=created_at.desc&limit=300") : Promise.resolve([]),
@@ -28,7 +29,23 @@ module.exports = async function handler(req, res) {
   const safeUsers = master ? users : users.filter(filterMaster);
   const safeLicenses = master ? licenses : licenses.filter(filterMaster);
   const safeDevices = master ? devices : devices.filter(filterMaster);
+  const safeAgreements = master ? agreements : agreements.filter(filterMaster);
   const active = (row) => String(row.status || row.license_status || "").toLowerCase() === "active";
+  const signedEmails = new Set(safeUsers.map((row) => String(row.email || row.user_email || "").toLowerCase()).filter(Boolean));
+  const deviceEmails = new Set(safeDevices.map((row) => String(row.email || row.user_email || "").toLowerCase()).filter(Boolean));
+  const agreementEmails = new Set(safeAgreements.map((row) => String(row.email || row.user_email || "").toLowerCase()).filter(Boolean));
+  const seatOnly = safeLicenses.filter((row) => {
+    const email = String(row.email || row.user_email || "").toLowerCase();
+    return email && !signedEmails.has(email);
+  });
+  const pendingDevice = safeLicenses.filter((row) => {
+    const email = String(row.email || row.user_email || "").toLowerCase();
+    return email && signedEmails.has(email) && !deviceEmails.has(email);
+  });
+  const pendingAgreement = safeLicenses.filter((row) => {
+    const email = String(row.email || row.user_email || "").toLowerCase();
+    return email && signedEmails.has(email) && !agreementEmails.has(email);
+  });
   return sendJson(res, 200, {
     ok: true,
     admin: user,
@@ -39,8 +56,12 @@ module.exports = async function handler(req, res) {
       users: safeUsers.length,
       licenses: safeLicenses.length,
       active_licenses: safeLicenses.filter(active).length,
+      license_seats_only: seatOnly.length,
+      pending_device_activation: pendingDevice.length,
+      pending_agreements: pendingAgreement.length,
       devices: safeDevices.length,
       active_devices: safeDevices.filter(active).length,
+      agreements: safeAgreements.length,
       referrals: referrals.length,
       pending_commission: 0,
     },
@@ -50,6 +71,12 @@ module.exports = async function handler(req, res) {
     users: safeUsers,
     licenses: safeLicenses,
     devices: safeDevices,
+    agreements: safeAgreements,
+    activation_state: {
+      seat_only: seatOnly,
+      pending_device: pendingDevice,
+      pending_agreement: pendingAgreement,
+    },
     referrals,
     commissions,
     events: master ? events : events.filter(filterMaster),
