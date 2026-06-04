@@ -70,35 +70,6 @@ async function writeEvent(user, payload) {
   }
 }
 
-async function createUserProfile(email, data, licenseKey, now) {
-  const fullName = String(data.full_name || data.name || "").trim().slice(0, 120);
-  const phone = String(data.phone || "").trim().slice(0, 60);
-  const existing = await getRows("users", new URLSearchParams({
-    email: `eq.${email}`,
-    select: "*",
-    limit: "1",
-  }).toString());
-
-  if (existing.length) {
-    const error = new Error("Customer email already exists. Use renew/update license instead of generating a new user.");
-    error.statusCode = 409;
-    throw error;
-  }
-
-  const payload = {
-    email,
-    full_name: fullName,
-    phone,
-    role: "USER",
-    status: "active",
-    license_key: licenseKey,
-    created_at: now,
-    updated_at: now,
-  };
-  const rows = await supabaseRequest("POST", "users", payload);
-  return { user_id: rows[0]?.id || "" };
-}
-
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return sendJson(res, 405, { ok: false, error: "Method not allowed." });
   const user = getSessionUser(req);
@@ -142,10 +113,18 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 409, { ok: false, error: "Customer already has a license. Use renew/update license instead." });
   }
 
-  const createdUser = await createUserProfile(email, { ...body, phone }, licenseKey, now);
+  const customerName = String(body.full_name || body.name || "").trim().slice(0, 120);
+  const creatorEmail = normalizeEmail(user.email || "");
+  const licenseNote = [
+    String(body.justification || body.reason || "Created from Partner Portal").trim(),
+    `Customer: ${customerName || email}`,
+    `Phone: ${phone}`,
+    `Created by: ${creatorEmail || "MASTER"}`,
+    `Created at: ${now}`,
+  ].filter(Boolean).join(" | ").slice(0, 500);
 
   const licensePayload = {
-    user_id: createdUser.user_id ? String(createdUser.user_id) : null,
+    user_id: null,
     email,
     license_key: licenseKey,
     plan_code: planCode,
@@ -154,7 +133,7 @@ module.exports = async function handler(req, res) {
     expiry_date: expiryDate,
     max_devices: maxDevices,
     renewed_count: 0,
-    notes: String(body.justification || body.reason || "Created from Partner Portal").trim().slice(0, 500),
+    notes: licenseNote,
     created_at: now,
     updated_at: now,
   };
@@ -170,7 +149,11 @@ module.exports = async function handler(req, res) {
       plan_code: planCode,
       valid_days: validDays,
       max_devices: maxDevices,
-      user_created: true,
+      customer_name: customerName,
+      phone,
+      creator_email: creatorEmail,
+      user_created: false,
+      account_created_by_app_signup: true,
     },
   });
 
@@ -180,7 +163,8 @@ module.exports = async function handler(req, res) {
     license_key: licenseKey,
     plan_code: planCode,
     expiry_date: expiryDate,
-    user_created: true,
+    user_created: false,
+    account_created_by_app_signup: true,
     rows,
   });
   } catch (error) {
