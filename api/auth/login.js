@@ -39,7 +39,8 @@ module.exports = async function handler(req, res) {
     const configuredPassword = process.env.MITPRO_WEB_PARTNER_PASSWORD || process.env.MITPRO_WEB_MASTER_PASSWORD || "";
     const role = String(row?.role || "USER").toUpperCase();
     const status = String(row?.status || "ACTIVE").toLowerCase();
-    const masterLicenseFallback = role === "MASTER" && status === "active" && row?.license_key && password === String(row.license_key);
+    const allowMasterLicenseFallback = String(process.env.MITPRO_ALLOW_MASTER_LICENSE_LOGIN || "").toLowerCase() === "true";
+    const masterLicenseFallback = allowMasterLicenseFallback && role === "MASTER" && status === "active" && row?.license_key && password === String(row.license_key);
     if (row && ((configuredPassword && password === configuredPassword) || masterLicenseFallback)) {
       user = {
         email: row.email,
