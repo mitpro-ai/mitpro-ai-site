@@ -36,12 +36,15 @@ module.exports = async function handler(req, res) {
   if (!user) {
     const rows = await supabaseRows("users", `email=eq.${encodeURIComponent(email)}&select=email,full_name,role,status,license_key,last_login_at&limit=1`);
     const row = rows[0];
-    const configuredPassword = process.env.MITPRO_WEB_PARTNER_PASSWORD || "";
-    if (row && configuredPassword && password === configuredPassword) {
+    const configuredPassword = process.env.MITPRO_WEB_PARTNER_PASSWORD || process.env.MITPRO_WEB_MASTER_PASSWORD || "";
+    const role = String(row?.role || "USER").toUpperCase();
+    const status = String(row?.status || "ACTIVE").toLowerCase();
+    const masterLicenseFallback = role === "MASTER" && status === "active" && row?.license_key && password === String(row.license_key);
+    if (row && ((configuredPassword && password === configuredPassword) || masterLicenseFallback)) {
       user = {
         email: row.email,
         name: row.full_name || row.email,
-        role: String(row.role || "USER").toUpperCase(),
+        role,
         license_key: row.license_key || "",
         license_status: row.status || "ACTIVE",
       };
