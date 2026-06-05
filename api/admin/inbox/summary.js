@@ -45,8 +45,30 @@ function emptyInbox(row, connected, error = "") {
   };
 }
 
-function authToken() {
-  return process.env.MITPRO_GMAIL_ACCESS_TOKEN || process.env.GOOGLE_WORKSPACE_ACCESS_TOKEN || "";
+async function refreshAccessToken() {
+  const clientId = process.env.GOOGLE_CLIENT_ID || process.env.MITPRO_GOOGLE_CLIENT_ID || "";
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET || process.env.MITPRO_GOOGLE_CLIENT_SECRET || "";
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_REFRESH_TOKEN || "";
+  if (!clientId || !clientSecret || !refreshToken) return "";
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      refresh_token: refreshToken,
+      grant_type: "refresh_token",
+    }),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error_description || data.error || "Google refresh token failed.");
+  return data.access_token || "";
+}
+
+async function authToken() {
+  const staticToken = process.env.MITPRO_GMAIL_ACCESS_TOKEN || process.env.GOOGLE_WORKSPACE_ACCESS_TOKEN || "";
+  if (staticToken) return staticToken;
+  return refreshAccessToken();
 }
 
 async function gmailJson(url, token) {
@@ -112,7 +134,7 @@ module.exports = async function handler(req, res) {
   const user = getSessionUser(req);
   if (!user || !isMaster(user)) return sendJson(res, 403, { ok: false, error: "MASTER access required for founder inbox." });
 
-  const token = authToken();
+  const token = await authToken().catch(() => "");
   if (!token) {
     return sendJson(res, 200, {
       ok: true,
