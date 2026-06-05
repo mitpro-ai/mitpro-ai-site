@@ -70,6 +70,10 @@ function withProfileCountry(rows, userByEmail) {
   });
 }
 
+function profileActiveToday(rows) {
+  return (rows || []).filter((row) => isToday(row?.last_login_at || row?.last_seen || row?.updated_at || row?.created_at));
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "Method not allowed." });
   const user = getSessionUser(req);
@@ -77,8 +81,8 @@ module.exports = async function handler(req, res) {
 
   const [recentActivity, profileUsers, licenseProfiles] = await Promise.all([
     supabaseRows("user_activity_logs", "select=*&order=event_time.desc&limit=1000"),
-    supabaseRows("users", "select=email,user_email,country,country_name,country_iso,country_code,updated_at,last_login_at,notes&limit=1000"),
-    supabaseRows("user_licenses", "select=email,user_email,country,country_name,country_iso,country_code,notes&limit=1000"),
+    supabaseRows("users", "select=*&limit=1000"),
+    supabaseRows("user_licenses", "select=*&limit=1000"),
   ]);
   const userByEmail = new Map((licenseProfiles || []).map((row) => [emailKey(row.email || row.user_email), row]));
   for (const row of profileUsers || []) userByEmail.set(emailKey(row.email || row.user_email), row);
@@ -91,6 +95,8 @@ module.exports = async function handler(req, res) {
     userByEmail,
   );
   const enrichedRecentActivity = withProfileCountry(recentActivity, userByEmail);
+  const activeCountryRows = countBy(activeToday, "country").filter((row) => row.key !== "UNKNOWN");
+  const profileActiveCountries = countBy(profileActiveToday(profileUsers), "country").filter((row) => row.key !== "UNKNOWN");
 
   return sendJson(res, 200, {
     ok: true,
@@ -101,7 +107,7 @@ module.exports = async function handler(req, res) {
       heartbeat_records: heartbeats.length,
       login_records: logins.length,
       backfilled_records: backfilled.length,
-      active_users_today: uniqueCount(activeToday, "user_id"),
+      active_users_today: uniqueCount(activeToday, "user_id") || profileActiveToday(profileUsers).length,
       unique_users: uniqueCount(enrichedRecentActivity, "user_id"),
       unique_devices: uniqueCount(enrichedRecentActivity, "device_id"),
       unique_sessions: uniqueCount(enrichedRecentActivity, "session_id"),
@@ -120,7 +126,7 @@ module.exports = async function handler(req, res) {
     strategies: countBy(lifecycle, "strategy"),
     pair_session_matrix: countBy(lifecycle, "pair"),
     user_activity: countBy(enrichedRecentActivity, "event_type"),
-    active_countries: countBy(activeToday, "country"),
+    active_countries: activeCountryRows.length ? activeCountryRows : profileActiveCountries,
     pages: countBy(heartbeats, "page"),
     devices: countBy(recentActivity, "device_id"),
     risk_flags: [],
