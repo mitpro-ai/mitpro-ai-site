@@ -108,8 +108,11 @@ function withProfileCountry(rows, userByEmail) {
   });
 }
 
-function profileActiveToday(rows) {
-  return (rows || []).filter((row) => isToday(row?.last_login_at || row?.last_seen || row?.updated_at || row?.created_at));
+function profileActiveToday(rows, activityEmails = new Set()) {
+  return (rows || []).filter((row) => {
+    const email = emailKey(row?.email || row?.user_email);
+    return (email && activityEmails.has(email)) || isToday(row?.last_login_at || row?.last_seen || row?.updated_at || row?.created_at);
+  });
 }
 
 function rememberProfile(map, row) {
@@ -121,8 +124,8 @@ function rememberProfile(map, row) {
   }
 }
 
-function countryRowsForActiveProfiles(profileRows, userByEmail) {
-  return profileActiveToday(profileRows).map((row) => {
+function countryRowsForActiveProfiles(profileRows, userByEmail, activityEmails = new Set()) {
+  return profileActiveToday(profileRows, activityEmails).map((row) => {
     const email = emailKey(row?.email || row?.user_email);
     const best = userByEmail.get(email) || row;
     return {
@@ -154,8 +157,15 @@ module.exports = async function handler(req, res) {
     userByEmail,
   );
   const enrichedRecentActivity = withProfileCountry(recentActivity, userByEmail);
+  const activityEmailsToday = new Set(
+    enrichedRecentActivity
+      .filter((row) => isToday(row.event_time || row.created_at))
+      .map((row) => emailKey(field(row, "user_id") || field(row, "email") || field(row, "user_email")))
+      .filter(Boolean),
+  );
   const activeCountryRows = countBy(activeToday, "country").filter((row) => row.key !== "UNKNOWN");
-  const profileActiveCountries = countBy(countryRowsForActiveProfiles(profileUsers, userByEmail), "key").filter((row) => row.key !== "UNKNOWN");
+  const profileActiveCountries = countBy(countryRowsForActiveProfiles(profileUsers, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
+  const licenseActiveCountries = countBy(countryRowsForActiveProfiles(licenseProfiles, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
 
   return sendJson(res, 200, {
     ok: true,
@@ -166,7 +176,7 @@ module.exports = async function handler(req, res) {
       heartbeat_records: heartbeats.length,
       login_records: logins.length,
       backfilled_records: backfilled.length,
-      active_users_today: uniqueCount(activeToday, "user_id") || profileActiveToday(profileUsers).length,
+      active_users_today: uniqueCount(activeToday, "user_id") || profileActiveToday(profileUsers, activityEmailsToday).length,
       unique_users: uniqueCount(enrichedRecentActivity, "user_id"),
       unique_devices: uniqueCount(enrichedRecentActivity, "device_id"),
       unique_sessions: uniqueCount(enrichedRecentActivity, "session_id"),
@@ -185,7 +195,13 @@ module.exports = async function handler(req, res) {
     strategies: countBy(lifecycle, "strategy"),
     pair_session_matrix: countBy(lifecycle, "pair"),
     user_activity: countBy(enrichedRecentActivity, "event_type"),
-    active_countries: activeCountryRows.length ? activeCountryRows : profileActiveCountries,
+    active_countries: activeCountryRows.length ? activeCountryRows : (profileActiveCountries.length ? profileActiveCountries : licenseActiveCountries),
+    active_country_debug: {
+      activity_emails_today: activityEmailsToday.size,
+      heartbeat_country_rows: activeCountryRows.length,
+      profile_country_rows: profileActiveCountries.length,
+      license_country_rows: licenseActiveCountries.length,
+    },
     pages: countBy(heartbeats, "page"),
     devices: countBy(recentActivity, "device_id"),
     risk_flags: [],
