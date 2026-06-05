@@ -195,6 +195,10 @@ module.exports = async function handler(req, res) {
       .filter(Boolean),
   );
   const activeCountryRows = countBy(activeToday, "country").filter((row) => row.key !== "UNKNOWN");
+  const activityCountryRows = countBy(
+    enrichedRecentActivity.filter((row) => isToday(row.event_time || row.created_at)),
+    "country",
+  ).filter((row) => row.key !== "UNKNOWN");
   const profileActiveCountries = countBy(countryRowsForActiveProfiles(profileUsers, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
   const licenseActiveCountries = countBy(countryRowsForActiveProfiles(licenseProfiles, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
 
@@ -226,10 +230,13 @@ module.exports = async function handler(req, res) {
     strategies: countBy(lifecycle, "strategy"),
     pair_session_matrix: countBy(lifecycle, "pair"),
     user_activity: countBy(enrichedRecentActivity, "event_type"),
-    active_countries: activeCountryRows.length ? activeCountryRows : (profileActiveCountries.length ? profileActiveCountries : licenseActiveCountries),
+    active_countries: activeCountryRows.length
+      ? activeCountryRows
+      : (activityCountryRows.length ? activityCountryRows : (profileActiveCountries.length ? profileActiveCountries : licenseActiveCountries)),
     active_country_debug: {
       activity_emails_today: activityEmailsToday.size,
       heartbeat_country_rows: activeCountryRows.length,
+      activity_country_rows: activityCountryRows.length,
       profile_country_rows: profileActiveCountries.length,
       license_country_rows: licenseActiveCountries.length,
     },
