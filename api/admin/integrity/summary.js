@@ -89,6 +89,40 @@ function countUniqueByCountry(rows) {
   return Array.from(countryUsers.entries()).map(([key, users]) => ({ key, count: users.size }));
 }
 
+function activeUserRows(rows) {
+  const latest = new Map();
+  for (const row of rows || []) {
+    if (!isToday(row?.event_time || row?.created_at)) continue;
+    const metadata = meta(row);
+    const email = emailKey(field(row, "user_id") || field(row, "email") || field(row, "user_email"));
+    const device = String(field(row, "device_id") || "").trim();
+    const session = String(field(row, "session_id") || "").trim();
+    const identity = email || device || session;
+    if (!identity) continue;
+
+    const lastSeen = row?.event_time || row?.created_at || "";
+    const current = latest.get(identity);
+    const lastSeenTime = Date.parse(lastSeen || "");
+    const currentTime = Date.parse(current?.last_seen || "");
+    if (current && (!Number.isFinite(lastSeenTime) || lastSeenTime <= currentTime)) continue;
+
+    latest.set(identity, {
+      id: identity,
+      user_id: email || "",
+      email,
+      device_id: device,
+      session_id: session,
+      country: field(row, "country") || "",
+      last_seen: lastSeen,
+      event_type: row?.event_type || metadata?.event_type || "activity",
+      page: field(row, "page") || metadata?.page || "",
+    });
+  }
+  return Array.from(latest.values())
+    .sort((a, b) => Date.parse(b.last_seen || "") - Date.parse(a.last_seen || ""))
+    .slice(0, 100);
+}
+
 function uniqueCount(rows, key) {
   const values = new Set();
   for (const row of rows || []) {
@@ -212,6 +246,7 @@ module.exports = async function handler(req, res) {
   const activityCountryRows = countUniqueByCountry(
     enrichedRecentActivity.filter((row) => isToday(row.event_time || row.created_at)),
   ).filter((row) => row.key !== "UNKNOWN");
+  const activeUsers = activeUserRows(enrichedRecentActivity);
   const profileActiveCountries = countBy(countryRowsForActiveProfiles(profileUsers, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
   const licenseActiveCountries = countBy(countryRowsForActiveProfiles(licenseProfiles, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
 
@@ -224,7 +259,7 @@ module.exports = async function handler(req, res) {
       heartbeat_records: heartbeats.length,
       login_records: logins.length,
       backfilled_records: backfilled.length,
-      active_users_today: uniqueCount(activeToday, "user_id") || profileActiveToday(profileUsers, activityEmailsToday).length,
+      active_users_today: activeUsers.length || uniqueCount(activeToday, "user_id") || profileActiveToday(profileUsers, activityEmailsToday).length,
       unique_users: uniqueCount(enrichedRecentActivity, "user_id"),
       unique_devices: uniqueCount(enrichedRecentActivity, "device_id"),
       unique_sessions: uniqueCount(enrichedRecentActivity, "session_id"),
@@ -235,6 +270,7 @@ module.exports = async function handler(req, res) {
       cloud_sync: { cloud_enabled: true, pending_cloud_events: 0 },
     },
     recent_activity: enrichedRecentActivity.slice(0, 250),
+    active_users: activeUsers,
     lifecycle,
     heartbeats: heartbeats.slice(0, 250),
     logins: logins.slice(0, 100),
