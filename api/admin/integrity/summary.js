@@ -75,6 +75,20 @@ function countBy(rows, key) {
   return Object.entries(out).map(([key, count]) => ({ key, count }));
 }
 
+function countUniqueByCountry(rows) {
+  const countryUsers = new Map();
+  for (const row of rows || []) {
+    const country = String(field(row, "country") || "").trim().toUpperCase();
+    if (!country || country === "UNKNOWN") continue;
+    const identity = emailKey(field(row, "user_id") || field(row, "email") || field(row, "user_email"))
+      || String(field(row, "device_id") || field(row, "session_id") || "").trim().toLowerCase();
+    if (!identity) continue;
+    if (!countryUsers.has(country)) countryUsers.set(country, new Set());
+    countryUsers.get(country).add(identity);
+  }
+  return Array.from(countryUsers.entries()).map(([key, users]) => ({ key, count: users.size }));
+}
+
 function uniqueCount(rows, key) {
   const values = new Set();
   for (const row of rows || []) {
@@ -195,9 +209,8 @@ module.exports = async function handler(req, res) {
       .filter(Boolean),
   );
   const activeCountryRows = countBy(activeToday, "country").filter((row) => row.key !== "UNKNOWN");
-  const activityCountryRows = countBy(
+  const activityCountryRows = countUniqueByCountry(
     enrichedRecentActivity.filter((row) => isToday(row.event_time || row.created_at)),
-    "country",
   ).filter((row) => row.key !== "UNKNOWN");
   const profileActiveCountries = countBy(countryRowsForActiveProfiles(profileUsers, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
   const licenseActiveCountries = countBy(countryRowsForActiveProfiles(licenseProfiles, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
