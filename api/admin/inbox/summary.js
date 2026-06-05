@@ -67,13 +67,19 @@ async function refreshAccessToken(refreshTokenOverride = "") {
 
 async function authToken(row) {
   const rowKey = String(row?.key || "").toUpperCase();
+  const supportToken = process.env.GOOGLE_SUPPORT_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_SUPPORT_REFRESH_TOKEN || "";
+  const adminToken = process.env.GOOGLE_ADMIN_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_ADMIN_REFRESH_TOKEN || "";
+  const legacyToken = process.env.GOOGLE_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_REFRESH_TOKEN || "";
   const rowToken = rowKey === "SUPPORT"
-    ? (process.env.GOOGLE_SUPPORT_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_SUPPORT_REFRESH_TOKEN || "")
+    ? (supportToken || legacyToken)
     : rowKey === "ADMIN"
-      ? (process.env.GOOGLE_ADMIN_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_ADMIN_REFRESH_TOKEN || "")
+      ? adminToken
       : "";
   const staticToken = process.env.MITPRO_GMAIL_ACCESS_TOKEN || process.env.GOOGLE_WORKSPACE_ACCESS_TOKEN || "";
   if (staticToken) return staticToken;
+  if (!rowToken && rowKey === "ADMIN") {
+    throw new Error("Admin inbox not connected yet. Add GOOGLE_ADMIN_REFRESH_TOKEN when ready.");
+  }
   return refreshAccessToken(rowToken);
 }
 
