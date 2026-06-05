@@ -37,8 +37,10 @@ module.exports = async function handler(req, res) {
 
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state") || "";
-  const [nonce, mac] = state.split(".");
-  if (!code || !nonce || !mac || sign(nonce) !== mac) {
+  const [payload, mac] = state.split(".");
+  const [nonce, inboxRaw] = String(payload || "").split(":");
+  const inbox = inboxRaw === "admin" ? "admin" : "support";
+  if (!code || !nonce || !mac || sign(payload) !== mac) {
     return html(res, 400, page("Invalid OAuth State", "<h1>Invalid OAuth State</h1><p>Please restart from the Founder Inbox authorization link inside the Master portal.</p>"));
   }
 
@@ -68,5 +70,6 @@ module.exports = async function handler(req, res) {
   if (!refreshToken) {
     return html(res, 200, page("Already Authorized", "<h1>Already Authorized</h1><p>Google did not return a new refresh token. Remove the app permission from your Google Account and run authorization again, or keep the existing refresh token if already saved.</p>"));
   }
-  return html(res, 200, page("Gmail Authorization Ready", `<h1>Gmail Authorization Ready</h1><p>Add this value in Vercel as <b>GOOGLE_REFRESH_TOKEN</b>. Keep it private.</p><textarea readonly>${escapeHtml(refreshToken)}</textarea><p class="warn">After saving the variable, redeploy the site and refresh the Master dashboard.</p><a class="btn" href="/partner">Return to Partner Portal</a>`));
+  const variableName = inbox === "admin" ? "GOOGLE_ADMIN_REFRESH_TOKEN" : "GOOGLE_SUPPORT_REFRESH_TOKEN";
+  return html(res, 200, page("Gmail Authorization Ready", `<h1>Gmail Authorization Ready</h1><p>Add this value in Vercel as <b>${escapeHtml(variableName)}</b>. Keep it private.</p><textarea readonly>${escapeHtml(refreshToken)}</textarea><p class="warn">After saving the variable, redeploy the site and refresh the Master dashboard.</p><a class="btn" href="/partner">Return to Partner Portal</a>`));
 };

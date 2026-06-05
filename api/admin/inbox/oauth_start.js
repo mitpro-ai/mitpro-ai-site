@@ -27,8 +27,11 @@ module.exports = async function handler(req, res) {
   const clientId = process.env.GOOGLE_CLIENT_ID || process.env.MITPRO_GOOGLE_CLIENT_ID || "";
   if (!clientId) return sendJson(res, 500, { ok: false, error: "GOOGLE_CLIENT_ID is not configured in Vercel." });
 
+  const url = new URL(req.url, baseUrl(req));
+  const inbox = String(url.searchParams.get("inbox") || "support").toLowerCase() === "admin" ? "admin" : "support";
   const nonce = crypto.randomBytes(18).toString("base64url");
-  const state = `${nonce}.${sign(nonce)}`;
+  const payload = `${nonce}:${inbox}`;
+  const state = `${payload}.${sign(payload)}`;
   const redirectUri = `${baseUrl(req)}/api/admin/inbox/oauth_callback`;
   const params = new URLSearchParams({
     client_id: clientId,

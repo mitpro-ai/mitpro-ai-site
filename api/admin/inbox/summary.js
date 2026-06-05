@@ -45,10 +45,10 @@ function emptyInbox(row, connected, error = "") {
   };
 }
 
-async function refreshAccessToken() {
+async function refreshAccessToken(refreshTokenOverride = "") {
   const clientId = process.env.GOOGLE_CLIENT_ID || process.env.MITPRO_GOOGLE_CLIENT_ID || "";
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET || process.env.MITPRO_GOOGLE_CLIENT_SECRET || "";
-  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_REFRESH_TOKEN || "";
+  const refreshToken = refreshTokenOverride || process.env.GOOGLE_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_REFRESH_TOKEN || "";
   if (!clientId || !clientSecret || !refreshToken) return "";
   const response = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -65,10 +65,16 @@ async function refreshAccessToken() {
   return data.access_token || "";
 }
 
-async function authToken() {
+async function authToken(row) {
+  const rowKey = String(row?.key || "").toUpperCase();
+  const rowToken = rowKey === "SUPPORT"
+    ? (process.env.GOOGLE_SUPPORT_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_SUPPORT_REFRESH_TOKEN || "")
+    : rowKey === "ADMIN"
+      ? (process.env.GOOGLE_ADMIN_REFRESH_TOKEN || process.env.MITPRO_GOOGLE_ADMIN_REFRESH_TOKEN || "")
+      : "";
   const staticToken = process.env.MITPRO_GMAIL_ACCESS_TOKEN || process.env.GOOGLE_WORKSPACE_ACCESS_TOKEN || "";
   if (staticToken) return staticToken;
-  return refreshAccessToken();
+  return refreshAccessToken(rowToken);
 }
 
 async function gmailJson(url, token) {
@@ -91,7 +97,8 @@ function headerValue(payload, name) {
   return item?.value || "";
 }
 
-async function readInbox(row, token) {
+async function readInbox(row) {
+  const token = await authToken(row);
   const encodedUser = encodeURIComponent(row.email);
   const listUrl = `https://gmail.googleapis.com/gmail/v1/users/${encodedUser}/messages?maxResults=25&q=${encodeURIComponent("newer_than:1d")}`;
   const list = await gmailJson(listUrl, token);
@@ -134,8 +141,17 @@ module.exports = async function handler(req, res) {
   const user = getSessionUser(req);
   if (!user || !isMaster(user)) return sendJson(res, 403, { ok: false, error: "MASTER access required for founder inbox." });
 
-  const token = await authToken().catch(() => "");
-  if (!token) {
+  const hasAnyCredential = Boolean(
+    process.env.MITPRO_GMAIL_ACCESS_TOKEN ||
+    process.env.GOOGLE_WORKSPACE_ACCESS_TOKEN ||
+    process.env.GOOGLE_REFRESH_TOKEN ||
+    process.env.MITPRO_GOOGLE_REFRESH_TOKEN ||
+    process.env.GOOGLE_SUPPORT_REFRESH_TOKEN ||
+    process.env.MITPRO_GOOGLE_SUPPORT_REFRESH_TOKEN ||
+    process.env.GOOGLE_ADMIN_REFRESH_TOKEN ||
+    process.env.MITPRO_GOOGLE_ADMIN_REFRESH_TOKEN
+  );
+  if (!hasAnyCredential) {
     return sendJson(res, 200, {
       ok: true,
       connected: false,
@@ -153,7 +169,7 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  const inboxes = await Promise.all(INBOXES.map((row) => readInbox(row, token).catch((error) => emptyInbox(row, false, error.message))));
+  const inboxes = await Promise.all(INBOXES.map((row) => readInbox(row).catch((error) => emptyInbox(row, false, error.message))));
   const total = (key) => inboxes.reduce((n, inbox) => n + Number(inbox[key] || 0), 0);
   return sendJson(res, 200, {
     ok: true,
