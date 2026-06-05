@@ -7,7 +7,45 @@ function meta(row) {
 
 function field(row, key) {
   const metadata = meta(row);
-  return row?.[key] ?? metadata?.[key] ?? metadata?.lifecycle_row?.[key] ?? metadata?.integrity_context?.[key] ?? "";
+  const value = row?.[key] ?? metadata?.[key] ?? metadata?.lifecycle_row?.[key] ?? metadata?.integrity_context?.[key] ?? "";
+  return key === "country" ? normalizeCountry(value) : value;
+}
+
+function normalizeCountry(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const key = raw.toLowerCase().replace(/\s+/g, " ");
+  const compact = key.replace(/[^a-z0-9+]/g, "");
+  const map = {
+    "+1": "USA",
+    "1": "USA",
+    us: "USA",
+    usa: "USA",
+    unitedstates: "USA",
+    america: "USA",
+    "+44": "UK",
+    "44": "UK",
+    uk: "UK",
+    gb: "UK",
+    unitedkingdom: "UK",
+    greatbritain: "UK",
+    "+91": "India",
+    "91": "India",
+    in: "India",
+    india: "India",
+    "+966": "Saudi Arabia",
+    "966": "Saudi Arabia",
+    sa: "Saudi Arabia",
+    ksa: "Saudi Arabia",
+    saudi: "Saudi Arabia",
+    saudiarabia: "Saudi Arabia",
+    "+971": "UAE",
+    "971": "UAE",
+    ae: "UAE",
+    uae: "UAE",
+    unitedarabemirates: "UAE",
+  };
+  return map[compact] || raw;
 }
 
 function countBy(rows, key) {
@@ -39,17 +77,17 @@ function emailKey(value) {
 }
 
 function countryFromUser(user) {
-  const direct = String(user?.country || user?.country_name || user?.country_iso || user?.country_code || "").trim();
+  const direct = normalizeCountry(user?.country || user?.country_name || user?.country_iso || user?.country_code || user?.phone_country_code);
   if (direct) return direct;
   const rawNotes = String(user?.notes || "");
   if (!rawNotes) return "";
   try {
     const parsed = JSON.parse(rawNotes.replace(/^V2_SIGNUP_PROFILE\s+/i, ""));
     const profile = parsed?.v2_signup_profile || parsed;
-    return String(profile?.country || profile?.country_iso || profile?.country_code || "").trim();
+    return normalizeCountry(profile?.country || profile?.country_iso || profile?.country_code || profile?.phone_country_code);
   } catch {
     const match = rawNotes.match(/"country"\s*:\s*"([^"]+)"/i);
-    return String(match?.[1] || "").trim();
+    return normalizeCountry(match?.[1]);
   }
 }
 
@@ -74,6 +112,26 @@ function profileActiveToday(rows) {
   return (rows || []).filter((row) => isToday(row?.last_login_at || row?.last_seen || row?.updated_at || row?.created_at));
 }
 
+function rememberProfile(map, row) {
+  const email = emailKey(row?.email || row?.user_email);
+  if (!email) return;
+  const existing = map.get(email);
+  if (!existing || (!countryFromUser(existing) && countryFromUser(row))) {
+    map.set(email, row);
+  }
+}
+
+function countryRowsForActiveProfiles(profileRows, userByEmail) {
+  return profileActiveToday(profileRows).map((row) => {
+    const email = emailKey(row?.email || row?.user_email);
+    const best = userByEmail.get(email) || row;
+    return {
+      key: countryFromUser(best) || countryFromUser(row),
+      count: 1,
+    };
+  }).filter((row) => row.key);
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "Method not allowed." });
   const user = getSessionUser(req);
@@ -84,8 +142,9 @@ module.exports = async function handler(req, res) {
     supabaseRows("users", "select=*&limit=1000"),
     supabaseRows("user_licenses", "select=*&limit=1000"),
   ]);
-  const userByEmail = new Map((licenseProfiles || []).map((row) => [emailKey(row.email || row.user_email), row]));
-  for (const row of profileUsers || []) userByEmail.set(emailKey(row.email || row.user_email), row);
+  const userByEmail = new Map();
+  for (const row of licenseProfiles || []) rememberProfile(userByEmail, row);
+  for (const row of profileUsers || []) rememberProfile(userByEmail, row);
   const lifecycle = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "MARKET_LIFECYCLE");
   const heartbeats = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "HEARTBEAT");
   const logins = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "LOGIN");
@@ -96,7 +155,7 @@ module.exports = async function handler(req, res) {
   );
   const enrichedRecentActivity = withProfileCountry(recentActivity, userByEmail);
   const activeCountryRows = countBy(activeToday, "country").filter((row) => row.key !== "UNKNOWN");
-  const profileActiveCountries = countBy(profileActiveToday(profileUsers), "country").filter((row) => row.key !== "UNKNOWN");
+  const profileActiveCountries = countBy(countryRowsForActiveProfiles(profileUsers, userByEmail), "key").filter((row) => row.key !== "UNKNOWN");
 
   return sendJson(res, 200, {
     ok: true,
