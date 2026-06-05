@@ -48,6 +48,24 @@ function normalizeCountry(value) {
   return map[compact] || raw;
 }
 
+function countryFromTimezone(value) {
+  const tz = String(value || "").trim().toLowerCase();
+  const map = {
+    "asia/riyadh": "Saudi Arabia",
+    "asia/kolkata": "India",
+    "asia/calcutta": "India",
+    "asia/dubai": "UAE",
+    "europe/london": "UK",
+    "america/new_york": "USA",
+    "america/chicago": "USA",
+    "america/denver": "USA",
+    "america/los_angeles": "USA",
+  };
+  if (map[tz]) return map[tz];
+  if (tz.startsWith("america/")) return "USA";
+  return "";
+}
+
 function countBy(rows, key) {
   const out = {};
   for (const row of rows || []) {
@@ -79,12 +97,14 @@ function emailKey(value) {
 function countryFromUser(user) {
   const direct = normalizeCountry(user?.country || user?.country_name || user?.country_iso || user?.country_code || user?.phone_country_code);
   if (direct) return direct;
+  const tzCountry = countryFromTimezone(user?.timezone || user?.time_zone);
+  if (tzCountry) return tzCountry;
   const rawNotes = String(user?.notes || "");
   if (!rawNotes) return "";
   try {
     const parsed = JSON.parse(rawNotes.replace(/^V2_SIGNUP_PROFILE\s+/i, ""));
     const profile = parsed?.v2_signup_profile || parsed;
-    return normalizeCountry(profile?.country || profile?.country_iso || profile?.country_code || profile?.phone_country_code);
+    return normalizeCountry(profile?.country || profile?.country_iso || profile?.country_code || profile?.phone_country_code) || countryFromTimezone(profile?.timezone || profile?.time_zone);
   } catch {
     const match = rawNotes.match(/"country"\s*:\s*"([^"]+)"/i);
     return normalizeCountry(match?.[1]);
@@ -94,6 +114,17 @@ function countryFromUser(user) {
 function withProfileCountry(rows, userByEmail) {
   return (rows || []).map((row) => {
     if (field(row, "country")) return row;
+    const metadataCountry = countryFromTimezone(meta(row).time_zone || meta(row).timeZone || meta(row).timezone);
+    if (metadataCountry) {
+      return {
+        ...row,
+        country: metadataCountry,
+        metadata_json: {
+          ...meta(row),
+          country_source: "heartbeat_timezone",
+        },
+      };
+    }
     const email = emailKey(field(row, "user_id") || field(row, "email") || field(row, "user_email"));
     const profileCountry = countryFromUser(userByEmail.get(email));
     if (!profileCountry) return row;
