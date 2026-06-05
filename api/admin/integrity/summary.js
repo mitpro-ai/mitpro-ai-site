@@ -39,7 +39,18 @@ function emailKey(value) {
 }
 
 function countryFromUser(user) {
-  return String(user?.country || user?.country_name || user?.country_iso || user?.country_code || "").trim();
+  const direct = String(user?.country || user?.country_name || user?.country_iso || user?.country_code || "").trim();
+  if (direct) return direct;
+  const rawNotes = String(user?.notes || "");
+  if (!rawNotes) return "";
+  try {
+    const parsed = JSON.parse(rawNotes.replace(/^V2_SIGNUP_PROFILE\s+/i, ""));
+    const profile = parsed?.v2_signup_profile || parsed;
+    return String(profile?.country || profile?.country_iso || profile?.country_code || "").trim();
+  } catch {
+    const match = rawNotes.match(/"country"\s*:\s*"([^"]+)"/i);
+    return String(match?.[1] || "").trim();
+  }
 }
 
 function withProfileCountry(rows, userByEmail) {
@@ -64,11 +75,13 @@ module.exports = async function handler(req, res) {
   const user = getSessionUser(req);
   if (!user) return sendJson(res, 401, { ok: false, error: "Login required." });
 
-  const [recentActivity, profileUsers] = await Promise.all([
+  const [recentActivity, profileUsers, licenseProfiles] = await Promise.all([
     supabaseRows("user_activity_logs", "select=*&order=event_time.desc&limit=1000"),
-    supabaseRows("users", "select=email,user_email,country,country_name,country_iso,country_code,updated_at,last_login_at&limit=1000"),
+    supabaseRows("users", "select=email,user_email,country,country_name,country_iso,country_code,updated_at,last_login_at,notes&limit=1000"),
+    supabaseRows("user_licenses", "select=email,user_email,country,country_name,country_iso,country_code,notes&limit=1000"),
   ]);
-  const userByEmail = new Map((profileUsers || []).map((row) => [emailKey(row.email || row.user_email), row]));
+  const userByEmail = new Map((licenseProfiles || []).map((row) => [emailKey(row.email || row.user_email), row]));
+  for (const row of profileUsers || []) userByEmail.set(emailKey(row.email || row.user_email), row);
   const lifecycle = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "MARKET_LIFECYCLE");
   const heartbeats = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "HEARTBEAT");
   const logins = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "LOGIN");
