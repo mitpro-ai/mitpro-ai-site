@@ -203,6 +203,7 @@ a {
 
 .live-launch-mark,
 .live-launch-copy,
+.live-launch-actions,
 .live-launch-btn {
   position: relative;
   z-index: 1;
@@ -273,6 +274,13 @@ a {
   color: var(--muted);
   font-size: 14px;
   line-height: 1.45;
+}
+
+.live-launch-actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 10px;
 }
 
 .live-launch-btn {
@@ -5090,9 +5098,17 @@ textarea {
     height: 42px;
   }
 
-  .live-launch-btn {
+  .live-launch-actions {
     grid-column: 1 / -1;
     justify-self: stretch;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .live-launch-btn {
+    justify-self: stretch;
+    min-width: 0;
     width: 100%;
   }
 
