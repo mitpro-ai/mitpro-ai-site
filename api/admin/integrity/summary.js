@@ -229,6 +229,52 @@ function strategyPerformanceRows(rows) {
   return { strategies, matrix };
 }
 
+function resultText(row) {
+  return String(field(row, "result_quality") || field(row, "result") || field(row, "outcome") || field(row, "trade_result") || "").toUpperCase();
+}
+
+function resultEventTime(row) {
+  const value = Date.parse(row?.event_time || row?.created_at || field(row, "created_at_utc") || "");
+  return Number.isFinite(value) ? value : 0;
+}
+
+function mergeSignalResultsIntoLifecycle(lifecycleRows, resultRows) {
+  const byTradeId = new Map();
+  for (const row of resultRows || []) {
+    const tradeId = String(field(row, "trade_id") || "").trim();
+    const result = resultText(row);
+    if (!tradeId || !["WIN", "LOSS", "REFUND", "WORKED", "WEAK"].some((key) => result.includes(key))) continue;
+    const existing = byTradeId.get(tradeId);
+    if (!existing || resultEventTime(row) >= resultEventTime(existing)) byTradeId.set(tradeId, row);
+  }
+
+  let matched = 0;
+  const merged = (lifecycleRows || []).map((row) => {
+    const tradeId = String(field(row, "trade_id") || "").trim();
+    const resultRow = tradeId ? byTradeId.get(tradeId) : null;
+    if (!resultRow) return row;
+    const result = resultText(resultRow);
+    const metadata = { ...meta(row) };
+    const lifecycleRow = { ...(metadata.lifecycle_row || {}) };
+    const integrityContext = { ...(lifecycleRow.integrity_context || metadata.integrity_context || {}) };
+    lifecycleRow.event = "result";
+    lifecycleRow.entry_type = "RESULT";
+    lifecycleRow.final_lifecycle = "RESULT";
+    lifecycleRow.result = result;
+    lifecycleRow.result_quality = result;
+    integrityContext.event = "result";
+    integrityContext.lifecycle = "RESULT";
+    integrityContext.trade_mode = "RESULT";
+    integrityContext.result_quality = result;
+    lifecycleRow.integrity_context = integrityContext;
+    metadata.lifecycle_row = lifecycleRow;
+    matched += 1;
+    return { ...row, metadata_json: metadata, _signal_result_merged: true };
+  });
+
+  return { rows: merged, matched, available: byTradeId.size };
+}
+
 function activeUserRows(rows) {
   const latest = new Map();
   for (const row of rows || []) {
@@ -359,17 +405,20 @@ module.exports = async function handler(req, res) {
   const user = getSessionUser(req);
   if (!user) return sendJson(res, 401, { ok: false, error: "Login required." });
 
-  const [recentActivity, lifecycleActivity, profileUsers, licenseProfiles] = await Promise.all([
+  const [recentActivity, lifecycleActivity, signalResultActivity, profileUsers, licenseProfiles] = await Promise.all([
     supabaseRows("user_activity_logs", "select=*&order=event_time.desc&limit=1000"),
     supabaseRows("user_activity_logs", "select=*&event_type=eq.MARKET_LIFECYCLE&order=event_time.desc&limit=5000"),
+    supabaseRows("user_activity_logs", "select=*&event_type=eq.SIGNAL_RESULT&order=event_time.desc&limit=5000"),
     supabaseRows("users", "select=*&limit=1000"),
     supabaseRows("user_licenses", "select=*&limit=1000"),
   ]);
   const userByEmail = new Map();
   for (const row of licenseProfiles || []) rememberProfile(userByEmail, row);
   for (const row of profileUsers || []) rememberProfile(userByEmail, row);
-  const lifecycle = (lifecycleActivity.length ? lifecycleActivity : recentActivity)
+  const rawLifecycle = (lifecycleActivity.length ? lifecycleActivity : recentActivity)
     .filter((row) => String(row.event_type || "").toUpperCase() === "MARKET_LIFECYCLE");
+  const resultMerge = mergeSignalResultsIntoLifecycle(rawLifecycle, signalResultActivity);
+  const lifecycle = resultMerge.rows;
   const heartbeats = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "HEARTBEAT");
   const logins = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "LOGIN");
   const backfilled = recentActivity.filter((row) => meta(row)._backfill);
@@ -399,6 +448,9 @@ module.exports = async function handler(req, res) {
       overall_state: "Normal",
       records_reviewed: enrichedRecentActivity.length,
       lifecycle_records: lifecycle.length,
+      signal_result_records: signalResultActivity.length,
+      signal_results_matched: resultMerge.matched,
+      signal_results_available: resultMerge.available,
       heartbeat_records: heartbeats.length,
       login_records: logins.length,
       backfilled_records: backfilled.length,
