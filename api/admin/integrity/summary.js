@@ -7,7 +7,9 @@ function meta(row) {
 
 function field(row, key) {
   const metadata = meta(row);
-  const value = row?.[key] ?? metadata?.[key] ?? metadata?.lifecycle_row?.[key] ?? metadata?.integrity_context?.[key] ?? "";
+  const lifecycleRow = metadata?.lifecycle_row || {};
+  const lifecycleContext = lifecycleRow?.integrity_context || {};
+  const value = row?.[key] ?? metadata?.[key] ?? lifecycleRow?.[key] ?? lifecycleContext?.[key] ?? metadata?.integrity_context?.[key] ?? "";
   return key === "country" ? normalizeCountry(value) : value;
 }
 
@@ -132,7 +134,8 @@ function strategyPerformanceRows(rows) {
     const created = row?.event_time || row?.created_at || field(row, "created_at_utc") || field(row, "time") || "";
     const pair = String(field(row, "pair") || field(row, "pair_locked") || "UNKNOWN").trim().toUpperCase() || "UNKNOWN";
     const strategy = String(field(row, "strategy") || field(row, "entry_type") || "UNKNOWN").trim().slice(0, 120) || "UNKNOWN";
-    const marketMode = String(field(row, "market_mode") || field(row, "market") || "UNKNOWN").trim().toUpperCase() || "UNKNOWN";
+    let marketMode = String(field(row, "market_mode") || field(row, "market") || "").trim().toUpperCase();
+    if (!marketMode || marketMode === "UNKNOWN") marketMode = pair.endsWith(" OTC") ? "OTC" : "REAL";
     const session = String(field(row, "session") || field(row, "market_session") || sessionFromTime(created)).toUpperCase();
 
     const strategyItem = strategyMap.get(strategy) || {
