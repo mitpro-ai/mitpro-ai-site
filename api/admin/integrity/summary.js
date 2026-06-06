@@ -350,15 +350,17 @@ module.exports = async function handler(req, res) {
   const user = getSessionUser(req);
   if (!user) return sendJson(res, 401, { ok: false, error: "Login required." });
 
-  const [recentActivity, profileUsers, licenseProfiles] = await Promise.all([
+  const [recentActivity, lifecycleActivity, profileUsers, licenseProfiles] = await Promise.all([
     supabaseRows("user_activity_logs", "select=*&order=event_time.desc&limit=1000"),
+    supabaseRows("user_activity_logs", "select=*&event_type=eq.MARKET_LIFECYCLE&order=event_time.desc&limit=5000"),
     supabaseRows("users", "select=*&limit=1000"),
     supabaseRows("user_licenses", "select=*&limit=1000"),
   ]);
   const userByEmail = new Map();
   for (const row of licenseProfiles || []) rememberProfile(userByEmail, row);
   for (const row of profileUsers || []) rememberProfile(userByEmail, row);
-  const lifecycle = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "MARKET_LIFECYCLE");
+  const lifecycle = (lifecycleActivity.length ? lifecycleActivity : recentActivity)
+    .filter((row) => String(row.event_type || "").toUpperCase() === "MARKET_LIFECYCLE");
   const heartbeats = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "HEARTBEAT");
   const logins = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "LOGIN");
   const backfilled = recentActivity.filter((row) => meta(row)._backfill);
