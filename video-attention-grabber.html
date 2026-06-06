@@ -924,9 +924,18 @@
       {t:2.2, major:true}, {t:5.4, major:true},
       {t:8.6, major:false}, {t:13.2, major:true}, {t:18.8, major:false},
       {t:23.8, major:true}, {t:31.2, major:true}, {t:37.8, major:false},
-      {t:44.6, major:true}, {t:52.2, major:true}, {t:58.8, major:false},
+      {t:44.6, major:true}, {t:50.9, major:true, audio:"arjun", power:.28}, {t:52.2, major:true}, {t:58.8, major:false},
       {t:63.4, major:true}, {t:68.2, major:true}
     ];
+    function ensureAudioEngine(){
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      master = master || audioCtx.createGain();
+      if(!master.connected){
+        master.connect(audioCtx.destination);
+        master.connected = true;
+      }
+      return audioCtx;
+    }
     function restartVisuals(){
       const animated = document.querySelectorAll(animatedSelectors);
       animated.forEach(el=>{ el.style.animation = "none"; });
@@ -945,10 +954,26 @@
       if(major) frame.classList.add("beat-major");
       setTimeout(()=>frame.classList.remove("beat-hit","beat-major"), 680);
     }
+    function protectionImpact(power=.24){
+      if(muted) return;
+      ensureAudioEngine();
+      master.gain.cancelScheduledValues(audioCtx.currentTime);
+      master.gain.setValueAtTime(Math.max(master.gain.value || 0.0001, .0001), audioCtx.currentTime);
+      master.gain.exponentialRampToValueAtTime(.68, audioCtx.currentTime + .05);
+      impact(0, power);
+      impact(.18, power * .58);
+      heroicChord([110,147,185,220], .08, 1.15, .045);
+      tone(55, .04, 1.25, .12, "sawtooth");
+      noiseHit(.02, .62, .14);
+      master.gain.setTargetAtTime(.42, audioCtx.currentTime + .9, .18);
+    }
     function scheduleBeatCues(){
       clearBeatCues();
       beatCues.forEach(cue=>{
-        beatTimers.push(setTimeout(()=>pulseBeat(cue.major), cue.t * 1000));
+        beatTimers.push(setTimeout(()=>{
+          pulseBeat(cue.major);
+          if(cue.audio === "arjun") protectionImpact(cue.power);
+        }, cue.t * 1000));
       });
     }
     function tone(freq, start, dur, gain=.08, type="sine", dest=master){
@@ -1026,12 +1051,7 @@
       osc.stop(audioCtx.currentTime + start + dur + .04);
     }
     function buildScore(){
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      master = master || audioCtx.createGain();
-      if(!master.connected){
-        master.connect(audioCtx.destination);
-        master.connected = true;
-      }
+      ensureAudioEngine();
       master.gain.cancelScheduledValues(audioCtx.currentTime);
       master.gain.setValueAtTime(0.0001, audioCtx.currentTime);
       master.gain.exponentialRampToValueAtTime(.62, audioCtx.currentTime + .45);
@@ -1066,6 +1086,8 @@
       muted = false;
       btn.textContent = "Sound On";
       btn.classList.add("on");
+      ensureAudioEngine();
+      if(audioCtx.state === "suspended") audioCtx.resume().catch(()=>{});
       clearBeatCues();
       restartVisuals();
       scheduleBeatCues();
