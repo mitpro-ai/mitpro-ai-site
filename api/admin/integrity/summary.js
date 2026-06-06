@@ -92,6 +92,8 @@ function countUniqueByCountry(rows) {
 }
 
 function lifecycleState(row) {
+  const result = String(field(row, "result_quality") || field(row, "result") || field(row, "outcome") || field(row, "trade_result") || "").toUpperCase();
+  if (result.includes("WORKED") || result.includes("WIN") || result.includes("SUCCESS") || result.includes("WEAK") || result.includes("LOSS") || result.includes("FAILED") || result.includes("REFUND")) return "RESULT";
   const text = String(field(row, "final_lifecycle") || field(row, "lifecycle") || field(row, "trade_mode") || field(row, "event") || field(row, "signal_category") || "").toUpperCase();
   if (text.includes("OBSERV")) return "OBSERVATION";
   if (text.includes("PENDING") || text.includes("PHASE")) return "PENDING";
