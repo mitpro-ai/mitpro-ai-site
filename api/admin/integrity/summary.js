@@ -147,6 +147,7 @@ function strategyPerformanceRows(rows) {
       worked: 0,
       weak: 0,
       review: 0,
+      unclassified: 0,
       pairs: new Set(),
       market_modes: new Set(),
     };
@@ -154,7 +155,7 @@ function strategyPerformanceRows(rows) {
     else if (lifecycle === "PENDING") strategyItem.pending += 1;
     else if (lifecycle === "ENTRY") strategyItem.entries += 1;
     else if (lifecycle === "RESULT") strategyItem.results += 1;
-    else strategyItem.review += 1;
+    else strategyItem.unclassified += 1;
     if (result === "WORKED") strategyItem.worked += 1;
     else if (result === "WEAK") strategyItem.weak += 1;
     else if (result === "REVIEW") strategyItem.review += 1;
@@ -174,12 +175,13 @@ function strategyPerformanceRows(rows) {
       worked: 0,
       weak: 0,
       review: 0,
+      unclassified: 0,
     };
     if (lifecycle === "OBSERVATION") matrixItem.observations += 1;
     else if (lifecycle === "PENDING") matrixItem.pending += 1;
     else if (lifecycle === "ENTRY") matrixItem.entries += 1;
     else if (lifecycle === "RESULT") matrixItem.results += 1;
-    else matrixItem.review += 1;
+    else matrixItem.unclassified += 1;
     if (result === "WORKED") matrixItem.worked += 1;
     else if (result === "WEAK") matrixItem.weak += 1;
     else if (result === "REVIEW") matrixItem.review += 1;
@@ -187,8 +189,8 @@ function strategyPerformanceRows(rows) {
   }
 
   const strategies = Array.from(strategyMap.values()).map((item) => {
-    const resultTotal = item.worked + item.weak + item.review;
-    const lifecycleTotal = item.observations + item.pending + item.entries + item.results + item.review;
+    const outcomeTotal = item.worked + item.weak;
+    const lifecycleTotal = item.observations + item.pending + item.entries + item.results + item.unclassified;
     return {
       strategy: item.strategy,
       observations: item.observations,
@@ -198,8 +200,10 @@ function strategyPerformanceRows(rows) {
       worked: item.worked,
       weak: item.weak,
       review: item.review,
-      worked_rate: rate(item.worked, resultTotal),
-      weak_rate: rate(item.weak, resultTotal),
+      outcome_total: outcomeTotal,
+      open_total: Math.max(0, lifecycleTotal - outcomeTotal),
+      worked_rate: outcomeTotal ? rate(item.worked, outcomeTotal) : null,
+      weak_rate: outcomeTotal ? rate(item.weak, outcomeTotal) : null,
       review_rate: rate(item.review, lifecycleTotal),
       pairs: item.pairs.size,
       market_modes: Array.from(item.market_modes).filter(Boolean).slice(0, 3).join(", ") || "UNKNOWN",
@@ -208,12 +212,15 @@ function strategyPerformanceRows(rows) {
   }).sort((a, b) => (b.count - a.count) || (b.worked_rate - a.worked_rate));
 
   const matrix = Array.from(matrixMap.values()).map((item) => {
-    const resultTotal = item.worked + item.weak + item.review;
+    const outcomeTotal = item.worked + item.weak;
+    const records = item.observations + item.pending + item.entries + item.results + item.unclassified;
     return {
       ...item,
-      worked_rate: rate(item.worked, resultTotal),
-      weak_rate: rate(item.weak, resultTotal),
-      records: item.observations + item.pending + item.entries + item.results + item.review,
+      outcome_total: outcomeTotal,
+      open_total: Math.max(0, records - outcomeTotal),
+      worked_rate: outcomeTotal ? rate(item.worked, outcomeTotal) : null,
+      weak_rate: outcomeTotal ? rate(item.weak, outcomeTotal) : null,
+      records,
     };
   }).sort((a, b) => b.records - a.records);
 
