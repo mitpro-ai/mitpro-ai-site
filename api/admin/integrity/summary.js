@@ -89,6 +89,134 @@ function countUniqueByCountry(rows) {
   return Array.from(countryUsers.entries()).map(([key, users]) => ({ key, count: users.size }));
 }
 
+function lifecycleState(row) {
+  const text = String(field(row, "final_lifecycle") || field(row, "lifecycle") || field(row, "trade_mode") || field(row, "event") || field(row, "signal_category") || "").toUpperCase();
+  if (text.includes("OBSERV")) return "OBSERVATION";
+  if (text.includes("PENDING") || text.includes("PHASE")) return "PENDING";
+  if (text.includes("ENTRY") || text.includes("VALIDATION")) return "ENTRY";
+  if (text.includes("RESULT") || text.includes("WORKED") || text.includes("WEAK")) return "RESULT";
+  if (text.includes("WATCH")) return "OBSERVATION";
+  if (text.includes("BLOCK")) return "REVIEW";
+  return "REVIEW";
+}
+
+function resultState(row) {
+  const text = String(field(row, "result_quality") || field(row, "result") || field(row, "outcome") || field(row, "trade_result") || "").toUpperCase();
+  if (text.includes("WORKED") || text.includes("WIN") || text.includes("SUCCESS")) return "WORKED";
+  if (text.includes("WEAK") || text.includes("LOSS") || text.includes("FAILED")) return "WEAK";
+  if (text.includes("REVIEW") || text.includes("BLOCK")) return "REVIEW";
+  return "";
+}
+
+function sessionFromTime(value) {
+  const date = new Date(value || "");
+  if (Number.isNaN(date.getTime())) return "UNKNOWN";
+  const hour = date.getUTCHours();
+  if (hour >= 0 && hour < 6) return "ASIA";
+  if (hour >= 6 && hour < 12) return "LONDON";
+  if (hour >= 12 && hour < 20) return "NEW YORK";
+  return "LATE";
+}
+
+function rate(part, total) {
+  total = Number(total) || 0;
+  return total ? Math.round(((Number(part) || 0) / total) * 100) : 0;
+}
+
+function strategyPerformanceRows(rows) {
+  const strategyMap = new Map();
+  const matrixMap = new Map();
+  for (const row of rows || []) {
+    const lifecycle = lifecycleState(row);
+    const result = resultState(row);
+    const created = row?.event_time || row?.created_at || field(row, "created_at_utc") || field(row, "time") || "";
+    const pair = String(field(row, "pair") || field(row, "pair_locked") || "UNKNOWN").trim().toUpperCase() || "UNKNOWN";
+    const strategy = String(field(row, "strategy") || field(row, "entry_type") || "UNKNOWN").trim().slice(0, 120) || "UNKNOWN";
+    const marketMode = String(field(row, "market_mode") || field(row, "market") || "UNKNOWN").trim().toUpperCase() || "UNKNOWN";
+    const session = String(field(row, "session") || field(row, "market_session") || sessionFromTime(created)).toUpperCase();
+
+    const strategyItem = strategyMap.get(strategy) || {
+      strategy,
+      observations: 0,
+      pending: 0,
+      entries: 0,
+      results: 0,
+      worked: 0,
+      weak: 0,
+      review: 0,
+      pairs: new Set(),
+      market_modes: new Set(),
+    };
+    if (lifecycle === "OBSERVATION") strategyItem.observations += 1;
+    else if (lifecycle === "PENDING") strategyItem.pending += 1;
+    else if (lifecycle === "ENTRY") strategyItem.entries += 1;
+    else if (lifecycle === "RESULT") strategyItem.results += 1;
+    else strategyItem.review += 1;
+    if (result === "WORKED") strategyItem.worked += 1;
+    else if (result === "WEAK") strategyItem.weak += 1;
+    else if (result === "REVIEW") strategyItem.review += 1;
+    strategyItem.pairs.add(pair);
+    strategyItem.market_modes.add(marketMode);
+    strategyMap.set(strategy, strategyItem);
+
+    const matrixKey = `${pair}|${session}|${marketMode}`;
+    const matrixItem = matrixMap.get(matrixKey) || {
+      pair,
+      session,
+      market_mode: marketMode,
+      observations: 0,
+      pending: 0,
+      entries: 0,
+      results: 0,
+      worked: 0,
+      weak: 0,
+      review: 0,
+    };
+    if (lifecycle === "OBSERVATION") matrixItem.observations += 1;
+    else if (lifecycle === "PENDING") matrixItem.pending += 1;
+    else if (lifecycle === "ENTRY") matrixItem.entries += 1;
+    else if (lifecycle === "RESULT") matrixItem.results += 1;
+    else matrixItem.review += 1;
+    if (result === "WORKED") matrixItem.worked += 1;
+    else if (result === "WEAK") matrixItem.weak += 1;
+    else if (result === "REVIEW") matrixItem.review += 1;
+    matrixMap.set(matrixKey, matrixItem);
+  }
+
+  const strategies = Array.from(strategyMap.values()).map((item) => {
+    const resultTotal = item.worked + item.weak + item.review;
+    const lifecycleTotal = item.observations + item.pending + item.entries + item.results + item.review;
+    return {
+      strategy: item.strategy,
+      observations: item.observations,
+      pending: item.pending,
+      entries: item.entries,
+      results: item.results,
+      worked: item.worked,
+      weak: item.weak,
+      review: item.review,
+      worked_rate: rate(item.worked, resultTotal),
+      weak_rate: rate(item.weak, resultTotal),
+      review_rate: rate(item.review, lifecycleTotal),
+      pairs: item.pairs.size,
+      market_modes: Array.from(item.market_modes).filter(Boolean).slice(0, 3).join(", ") || "UNKNOWN",
+      count: lifecycleTotal,
+    };
+  }).sort((a, b) => (b.count - a.count) || (b.worked_rate - a.worked_rate));
+
+  const matrix = Array.from(matrixMap.values()).map((item) => {
+    const resultTotal = item.worked + item.weak + item.review;
+    return {
+      ...item,
+      worked_rate: rate(item.worked, resultTotal),
+      weak_rate: rate(item.weak, resultTotal),
+      records: item.observations + item.pending + item.entries + item.results + item.review,
+    };
+  }).sort((a, b) => b.records - a.records);
+
+  return { strategies, matrix };
+}
+
 function activeUserRows(rows) {
   const latest = new Map();
   for (const row of rows || []) {
@@ -247,6 +375,7 @@ module.exports = async function handler(req, res) {
     enrichedRecentActivity.filter((row) => isToday(row.event_time || row.created_at)),
   ).filter((row) => row.key !== "UNKNOWN");
   const activeUsers = activeUserRows(enrichedRecentActivity);
+  const strategyPerformance = strategyPerformanceRows(lifecycle);
   const profileActiveCountries = countBy(countryRowsForActiveProfiles(profileUsers, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
   const licenseActiveCountries = countBy(countryRowsForActiveProfiles(licenseProfiles, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
 
@@ -276,8 +405,8 @@ module.exports = async function handler(req, res) {
     logins: logins.slice(0, 100),
     results: countBy(lifecycle, "result_quality"),
     market_modes: countBy(lifecycle, "market_mode"),
-    strategies: countBy(lifecycle, "strategy"),
-    pair_session_matrix: countBy(lifecycle, "pair"),
+    strategies: strategyPerformance.strategies,
+    pair_session_matrix: strategyPerformance.matrix,
     user_activity: countBy(enrichedRecentActivity, "event_type"),
     active_countries: activeCountryRows.length
       ? activeCountryRows
