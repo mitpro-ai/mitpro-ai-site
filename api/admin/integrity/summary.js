@@ -112,6 +112,43 @@ function resultState(row) {
   return "";
 }
 
+function brokerEvidence(row) {
+  const metadata = meta(row);
+  const lifecycleRow = metadata?.lifecycle_row || {};
+  const direct = metadata?.broker_mode_evidence || lifecycleRow?.broker_mode_evidence || {};
+  const mode = String(direct?.mode || field(row, "broker_account_mode") || "").trim().toUpperCase();
+  if (!["DEMO", "REAL", "UNKNOWN"].includes(mode)) return null;
+  return {
+    mode,
+    confidence: Number(direct?.confidence || 0) || 0,
+    reason: String(direct?.reason || "").slice(0, 180),
+    raw: String(direct?.raw || "").slice(0, 180),
+    source: String(direct?.source || "shared_screen_visible_text"),
+    event_time: row?.event_time || row?.created_at || field(row, "created_at_utc") || "",
+    user_id: emailKey(field(row, "user_id") || field(row, "email") || field(row, "user_email")),
+    session_id: String(field(row, "session_id") || "").trim(),
+    device_id: String(field(row, "device_id") || "").trim(),
+    country: field(row, "country") || "",
+  };
+}
+
+function latestBrokerEvidence(rows) {
+  const latest = new Map();
+  for (const row of rows || []) {
+    const evidence = brokerEvidence(row);
+    if (!evidence) continue;
+    const identity = evidence.user_id || evidence.device_id || evidence.session_id;
+    if (!identity) continue;
+    const time = Date.parse(evidence.event_time || "");
+    const existing = latest.get(identity);
+    const existingTime = Date.parse(existing?.event_time || "");
+    if (!existing || (Number.isFinite(time) && (!Number.isFinite(existingTime) || time >= existingTime))) {
+      latest.set(identity, evidence);
+    }
+  }
+  return Array.from(latest.values()).sort((a, b) => Date.parse(b.event_time || "") - Date.parse(a.event_time || ""));
+}
+
 function sessionFromTime(value) {
   const date = new Date(value || "");
   if (Number.isNaN(date.getTime())) return "UNKNOWN";
@@ -439,6 +476,7 @@ module.exports = async function handler(req, res) {
   ).filter((row) => row.key !== "UNKNOWN");
   const activeUsers = activeUserRows(enrichedRecentActivity);
   const strategyPerformance = strategyPerformanceRows(lifecycle);
+  const brokerEvidenceRows = latestBrokerEvidence([...enrichedRecentActivity, ...lifecycle]);
   const profileActiveCountries = countBy(countryRowsForActiveProfiles(profileUsers, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
   const licenseActiveCountries = countBy(countryRowsForActiveProfiles(licenseProfiles, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
 
@@ -461,6 +499,9 @@ module.exports = async function handler(req, res) {
       unique_ips: uniqueCount(enrichedRecentActivity, "ip_address"),
       unique_countries: uniqueCount(enrichedRecentActivity, "country"),
       unique_pairs: uniqueCount(lifecycle, "pair"),
+      broker_real_users: brokerEvidenceRows.filter((row) => row.mode === "REAL").length,
+      broker_demo_users: brokerEvidenceRows.filter((row) => row.mode === "DEMO").length,
+      broker_unknown_users: brokerEvidenceRows.filter((row) => row.mode === "UNKNOWN").length,
       source_type: enrichedRecentActivity.length ? "supabase" : "cloud_ready",
       cloud_sync: { cloud_enabled: true, pending_cloud_events: 0 },
     },
@@ -471,6 +512,8 @@ module.exports = async function handler(req, res) {
     logins: logins.slice(0, 100),
     results: countBy(lifecycle, "result_quality"),
     market_modes: countBy(lifecycle, "market_mode"),
+    broker_modes: countBy(brokerEvidenceRows, "mode"),
+    broker_evidence: brokerEvidenceRows.slice(0, 100),
     strategies: strategyPerformance.strategies,
     pair_session_matrix: strategyPerformance.matrix,
     user_activity: countBy(enrichedRecentActivity, "event_type"),
