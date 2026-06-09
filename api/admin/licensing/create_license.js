@@ -21,8 +21,25 @@ function plusDaysIso(days) {
   return new Date(Date.now() + days * 86400000).toISOString();
 }
 
-function makeLicenseKey(planCode) {
-  return `MITPRO-${planCode}-${crypto.randomBytes(3).toString("hex").toUpperCase()}-${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
+function planName(planCode) {
+  return ({ BASIC: "GUARDIAN", PRO: "COMMANDER", ELITE: "SUPREME" }[String(planCode || "").toUpperCase()] || String(planCode || "GUARDIAN").toUpperCase());
+}
+
+function normalizeAccessPlan(value, fallback = "PRO") {
+  const plan = String(value || fallback).trim().toUpperCase();
+  if (["BASIC", "PRO", "ELITE"].includes(plan)) return plan;
+  if (plan === "TRIAL") return "BASIC";
+  return fallback;
+}
+
+function normalizeLicenseType(value) {
+  const type = String(value || "PAID").trim().toUpperCase();
+  return type === "TRIAL" ? "TRIAL" : "PAID";
+}
+
+function makeLicenseKey(planCode, licenseType = "PAID") {
+  const prefix = licenseType === "TRIAL" ? `TRIAL-${planCode}` : planCode;
+  return `MITPRO-${prefix}-${crypto.randomBytes(3).toString("hex").toUpperCase()}-${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
 }
 
 async function supabaseRequest(method, tablePath, payload, query = "") {
@@ -83,17 +100,18 @@ module.exports = async function handler(req, res) {
   const phone = String(body.phone || "").trim().slice(0, 60);
   if (!phone) return sendJson(res, 400, { ok: false, error: "Phone / WhatsApp is required." });
 
-  const planCode = String(body.plan_code || "PRO").trim().toUpperCase();
-  if (!["TRIAL", "BASIC", "PRO", "ELITE"].includes(planCode)) {
-    return sendJson(res, 400, { ok: false, error: "Plan must be TRIAL, BASIC, PRO, or ELITE." });
+  const licenseType = normalizeLicenseType(body.license_type || (String(body.plan_code || "").trim().toUpperCase() === "TRIAL" ? "TRIAL" : "PAID"));
+  const planCode = normalizeAccessPlan(body.trial_category || body.access_plan || body.plan_code || "PRO", "PRO");
+  if (!["BASIC", "PRO", "ELITE"].includes(planCode)) {
+    return sendJson(res, 400, { ok: false, error: "Access category must be Guardian, Commander, or Supreme." });
   }
 
-  const validDays = clampInt(body.valid_days, 1, 3650, 30);
+  const validDays = clampInt(body.valid_days, 1, 3650, licenseType === "TRIAL" ? 7 : 30);
   const maxDevices = clampInt(body.max_devices, 1, 20, 1);
   const now = nowIso();
   const expiryDate = plusDaysIso(validDays);
   let licenseKey = String(body.license_key || "").trim().toUpperCase();
-  if (!licenseKey) licenseKey = makeLicenseKey(planCode);
+  if (!licenseKey) licenseKey = makeLicenseKey(planCode, licenseType);
 
   const duplicate = await getRows("user_licenses", new URLSearchParams({
     license_key: `eq.${licenseKey}`,
@@ -117,6 +135,8 @@ module.exports = async function handler(req, res) {
   const creatorEmail = normalizeEmail(user.email || "");
   const licenseNote = [
     String(body.justification || body.reason || "Created from Partner Portal").trim(),
+    `License type: ${licenseType}`,
+    licenseType === "TRIAL" ? `Trial category: ${planName(planCode)}` : `Access category: ${planName(planCode)}`,
     `Customer: ${customerName || email}`,
     `Phone: ${phone}`,
     `Created by: ${creatorEmail || "MASTER"}`,
@@ -146,6 +166,8 @@ module.exports = async function handler(req, res) {
     license_key: licenseKey,
     status: "active",
     details: {
+      license_type: licenseType,
+      access_category: planName(planCode),
       plan_code: planCode,
       valid_days: validDays,
       max_devices: maxDevices,
@@ -162,6 +184,8 @@ module.exports = async function handler(req, res) {
     email,
     license_key: licenseKey,
     plan_code: planCode,
+    license_type: licenseType,
+    access_category: planName(planCode),
     expiry_date: expiryDate,
     user_created: false,
     account_created_by_app_signup: true,
