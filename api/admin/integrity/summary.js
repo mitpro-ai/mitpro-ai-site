@@ -322,6 +322,7 @@ function activeUserRows(rows) {
     const session = String(field(row, "session_id") || "").trim();
     const identity = email || device || session;
     if (!identity) continue;
+    if (isServiceIdentity(identity) || isServiceIdentity(email)) continue;
 
     const lastSeen = row?.event_time || row?.created_at || "";
     const current = latest.get(identity);
@@ -344,6 +345,18 @@ function activeUserRows(rows) {
   return Array.from(latest.values())
     .sort((a, b) => Date.parse(b.last_seen || "") - Date.parse(a.last_seen || ""))
     .slice(0, 100);
+}
+
+function isServiceIdentity(value) {
+  const key = String(value || "").trim().toLowerCase();
+  return [
+    "local_server",
+    "server",
+    "localhost",
+    "system",
+    "mitpro_server",
+    "mitpro-local-server",
+  ].includes(key);
 }
 
 function uniqueCount(rows, key) {
@@ -468,7 +481,7 @@ module.exports = async function handler(req, res) {
     enrichedRecentActivity
       .filter((row) => isToday(row.event_time || row.created_at))
       .map((row) => emailKey(field(row, "user_id") || field(row, "email") || field(row, "user_email")))
-      .filter(Boolean),
+      .filter((value) => value && !isServiceIdentity(value)),
   );
   const activeCountryRows = countBy(activeToday, "country").filter((row) => row.key !== "UNKNOWN");
   const activityCountryRows = countUniqueByCountry(
