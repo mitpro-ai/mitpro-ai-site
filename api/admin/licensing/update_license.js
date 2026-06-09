@@ -21,10 +21,47 @@ function normalizeStatus(value) {
   return "";
 }
 
-function normalizePlan(value) {
-  const plan = String(value || "").trim().toUpperCase();
-  if (["TRIAL", "BASIC", "PRO", "ELITE"].includes(plan)) return plan;
-  return "";
+function planName(planCode) {
+  return ({ BASIC: "GUARDIAN", PRO: "COMMANDER", ELITE: "SUPREME" }[String(planCode || "").toUpperCase()] || String(planCode || "GUARDIAN").toUpperCase());
+}
+
+function normalizePlanSelection(value) {
+  const raw = String(value || "").trim().toUpperCase().replace(/[\s:-]+/g, "_");
+  const map = {
+    TRIAL: { planCode: "BASIC", licenseType: "TRIAL" },
+    TRIAL_BASIC: { planCode: "BASIC", licenseType: "TRIAL" },
+    TRIAL_GUARDIAN: { planCode: "BASIC", licenseType: "TRIAL" },
+    TRIAL_PRO: { planCode: "PRO", licenseType: "TRIAL" },
+    TRIAL_COMMANDER: { planCode: "PRO", licenseType: "TRIAL" },
+    TRIAL_ELITE: { planCode: "ELITE", licenseType: "TRIAL" },
+    TRIAL_SUPREME: { planCode: "ELITE", licenseType: "TRIAL" },
+    BASIC: { planCode: "BASIC", licenseType: "PAID" },
+    GUARDIAN: { planCode: "BASIC", licenseType: "PAID" },
+    PRO: { planCode: "PRO", licenseType: "PAID" },
+    COMMANDER: { planCode: "PRO", licenseType: "PAID" },
+    ELITE: { planCode: "ELITE", licenseType: "PAID" },
+    SUPREME: { planCode: "ELITE", licenseType: "PAID" },
+  };
+  return map[raw] || null;
+}
+
+function planSelectionLabel(selection) {
+  if (!selection) return "";
+  const category = planName(selection.planCode);
+  return selection.licenseType === "TRIAL" ? `Trial ${category}` : category;
+}
+
+function licenseNoteForChange(existingNotes, selection, userEmail, reason, now) {
+  const clean = String(existingNotes || "")
+    .split("|")
+    .map((part) => part.trim())
+    .filter((part) => part && !/^License type:/i.test(part) && !/^Trial category:/i.test(part) && !/^Access category:/i.test(part));
+  clean.push(`License type: ${selection.licenseType}`);
+  clean.push(selection.licenseType === "TRIAL" ? `Trial category: ${planName(selection.planCode)}` : `Access category: ${planName(selection.planCode)}`);
+  clean.push(`Updated by: ${userEmail || "MASTER"}`);
+  clean.push(`Updated at: ${now}`);
+  if (reason) clean.push(`Update reason: ${reason}`);
+  return clean.join(" | ").slice(0, 500);
 }
 
 function clampDays(value) {
@@ -92,12 +129,12 @@ module.exports = async function handler(req, res) {
     const licenseKey = String(body.license_key || "").trim().toUpperCase();
     const reason = String(body.justification || body.reason || body.payment_note || "").trim().slice(0, 500);
     const requestedStatus = normalizeStatus(body.status);
-    const requestedPlan = normalizePlan(body.plan_code);
+    const requestedPlan = body.plan_code ? normalizePlanSelection(body.plan_code) : null;
     const extendDays = clampDays(body.extend_days);
 
     if (!licenseKey) return sendJson(res, 400, { ok: false, error: "License key is required." });
     if (!requestedStatus && !requestedPlan && !extendDays) return sendJson(res, 400, { ok: false, error: "Choose a license action first." });
-    if (body.plan_code && !requestedPlan) return sendJson(res, 400, { ok: false, error: "Plan must be TRIAL, BASIC, PRO, or ELITE." });
+    if (body.plan_code && !requestedPlan) return sendJson(res, 400, { ok: false, error: "Plan must be Trial Guardian, Trial Commander, Trial Supreme, Guardian, Commander, or Supreme." });
     if (requestedPlan && !isMaster(user)) return sendJson(res, 403, { ok: false, error: "MASTER access required to upgrade or downgrade a license." });
     if (!reason) return sendJson(res, 400, { ok: false, error: "Justification is required for license changes." });
 
@@ -114,9 +151,12 @@ module.exports = async function handler(req, res) {
     }
 
     if (requestedPlan) {
-      patch.plan_code = requestedPlan;
+      patch.plan_code = requestedPlan.planCode;
+      patch.notes = licenseNoteForChange(licenseRow.notes, requestedPlan, user.email || "", reason, now);
       details.previous_plan = licenseRow.plan_code || "";
-      details.new_plan = requestedPlan;
+      details.new_plan = requestedPlan.planCode;
+      details.license_type = requestedPlan.licenseType;
+      details.access_category = planName(requestedPlan.planCode);
     }
 
     if (extendDays) {
@@ -136,7 +176,7 @@ module.exports = async function handler(req, res) {
     if ((requestedStatus || requestedPlan) && licenseRow.email) {
       const userPatch = { updated_at: now };
       if (requestedStatus) userPatch.status = requestedStatus === "active" ? "active" : requestedStatus;
-      if (requestedPlan) userPatch.plan_code = requestedPlan;
+      if (requestedPlan) userPatch.plan_code = requestedPlan.planCode;
       await supabaseRequest("PATCH", "users", {
         ...userPatch,
       }, query({ email: `eq.${normalizeEmail(licenseRow.email)}` })).catch(() => []);
@@ -152,7 +192,7 @@ module.exports = async function handler(req, res) {
       message: extendDays
         ? `License ${licenseKey} renewed for ${extendDays} day(s)`
         : requestedPlan
-          ? `License ${licenseKey} changed to ${requestedPlan}`
+          ? `License ${licenseKey} changed to ${planSelectionLabel(requestedPlan)}`
         : `License ${licenseKey} changed to ${requestedStatus}`,
       status: patch.status || licenseRow.status || "active",
       details,
@@ -163,6 +203,8 @@ module.exports = async function handler(req, res) {
       license_key: licenseKey,
       status: patch.status || licenseRow.status,
       plan_code: patch.plan_code || licenseRow.plan_code,
+      license_type: requestedPlan?.licenseType,
+      access_category: requestedPlan ? planName(requestedPlan.planCode) : undefined,
       expiry_date: patch.expiry_date || licenseRow.expiry_date,
       rows: updatedRows,
     });
