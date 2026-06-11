@@ -55,6 +55,7 @@ module.exports = async function handler(req, res) {
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
     const licenseKey = String(body.license_key || "").trim().toUpperCase();
     const reason = String(body.justification || body.reason || "").trim().slice(0, 500);
+    const deviceIdentifier = String(body.device_identifier || body.device_id || body.device_hash || body.id || "").trim();
     if (!licenseKey) return sendJson(res, 400, { ok: false, error: "License key is required." });
     if (!reason) return sendJson(res, 400, { ok: false, error: "Justification is required for device reset." });
 
@@ -66,15 +67,32 @@ module.exports = async function handler(req, res) {
       select: "*",
     })).catch(() => []);
 
-    await supabaseRequest("DELETE", "user_devices", null, query({ license_id: `eq.${licenseRow.id}` }));
+    let removedDevices = existingDevices;
+    let resetMode = "all_devices";
+    if (deviceIdentifier) {
+      const target = existingDevices.find((device) => {
+        return [device.id, device.device_id, device.device_hash].some((value) => String(value || "").trim() === deviceIdentifier);
+      });
+      if (!target) return sendJson(res, 404, { ok: false, error: "Selected device was not found for this license." });
+      const deleteColumn = target.id ? "id" : target.device_id ? "device_id" : "device_hash";
+      const deleteValue = target[deleteColumn];
+      await supabaseRequest("DELETE", "user_devices", null, query({
+        license_id: `eq.${licenseRow.id}`,
+        [deleteColumn]: `eq.${deleteValue}`,
+      }));
+      removedDevices = [target];
+      resetMode = "single_device";
+    } else {
+      await supabaseRequest("DELETE", "user_devices", null, query({ license_id: `eq.${licenseRow.id}` }));
+    }
     await supabaseRequest("PATCH", "user_licenses", {
       updated_at: nowIso(),
-      notes: `DEVICE_RESET ${reason}`,
+      notes: `${resetMode === "single_device" ? "DEVICE_RESET_ONE" : "DEVICE_RESET"} ${reason}`,
     }, query({ license_key: `eq.${licenseKey}` })).catch(() => []);
 
     await supabaseRequest("POST", "license_events", {
-      event_type: "WEB_PARTNER_DEVICE_RESET",
-      message: `Device bindings reset for ${licenseKey}`,
+      event_type: resetMode === "single_device" ? "WEB_PARTNER_DEVICE_RESET_ONE" : "WEB_PARTNER_DEVICE_RESET",
+      message: resetMode === "single_device" ? `One device binding reset for ${licenseKey}` : `Device bindings reset for ${licenseKey}`,
       email: normalizeEmail(licenseRow.email),
       license_key: licenseKey,
       status: "device_reset",
@@ -83,7 +101,9 @@ module.exports = async function handler(req, res) {
       details_json: {
         reason,
         action_by: user.email || "",
-        removed_devices: existingDevices.length,
+        reset_mode: resetMode,
+        removed_devices: removedDevices.length,
+        removed_device: removedDevices[0] || null,
       },
     }).catch(() => []);
 
@@ -91,8 +111,11 @@ module.exports = async function handler(req, res) {
       ok: true,
       status: "completed",
       license_key: licenseKey,
-      removed_devices: existingDevices.length,
-      message: "Device reset completed. The customer can bind the next approved device on login.",
+      reset_mode: resetMode,
+      removed_devices: removedDevices.length,
+      message: resetMode === "single_device"
+        ? "Selected device reset completed. That device can bind again on next login."
+        : "Device reset completed. The customer can bind the next approved device on login.",
     });
   } catch (error) {
     return sendJson(res, 500, { ok: false, error: error.message || "Device reset failed." });
