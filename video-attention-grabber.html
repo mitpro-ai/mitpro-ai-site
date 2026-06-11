@@ -596,6 +596,81 @@
       cursor:pointer;
     }
     .sound-toggle.on{color:var(--green);border-color:rgba(18,255,145,.45)}
+    .teaser-nav{
+      position:absolute;
+      left:22px;
+      right:22px;
+      bottom:22px;
+      z-index:21;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      pointer-events:none;
+    }
+    .teaser-links,
+    .teaser-controls{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      pointer-events:auto;
+    }
+    .teaser-action,
+    .teaser-link{
+      min-height:36px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(102,255,244,.3);
+      border-radius:999px;
+      background:rgba(2,7,10,.78);
+      color:#dff;
+      padding:10px 14px;
+      text-decoration:none;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.7px;
+      text-transform:uppercase;
+      cursor:pointer;
+      box-shadow:0 14px 38px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.06);
+      backdrop-filter:blur(12px);
+    }
+    .teaser-controls .sound-toggle{
+      position:static;
+      right:auto;
+      bottom:auto;
+    }
+    .teaser-action.primary{
+      color:#07120f;
+      border-color:rgba(18,255,145,.78);
+      background:linear-gradient(135deg,#66fff4,#12ff91);
+      box-shadow:0 0 28px rgba(18,255,145,.22),0 14px 38px rgba(0,0,0,.38);
+    }
+    .teaser-action.danger{
+      color:#ffd7dc;
+      border-color:rgba(255,97,113,.42);
+      background:rgba(255,97,113,.1);
+    }
+    .teaser-link:hover,
+    .teaser-action:hover{
+      border-color:rgba(102,255,244,.64);
+      transform:translateY(-1px);
+    }
+    .frame.is-stopped .scene,
+    .frame.is-stopped .legal,
+    .frame.is-stopped .url,
+    .frame.is-stopped .shot-card,
+    .frame.is-stopped .shot,
+    .frame.is-stopped .story-card,
+    .frame.is-stopped .story-img,
+    .frame.is-stopped .magnifier,
+    .frame.is-stopped .reactor-core,
+    .frame.is-stopped .title-orb,
+    .frame.is-stopped .glow,
+    .frame.is-stopped .grid,
+    .frame.is-stopped .scan{
+      animation-play-state:paused!important;
+    }
     .s1{animation:s1 70.6s ease forwards}
     .s2{animation:s2 70.6s ease forwards}
     .s3{animation:s3 70.6s ease forwards}
@@ -673,12 +748,25 @@
       .metric{min-height:58px}
       .url{font-size:16px}
       .legal{font-size:9px}
+      .teaser-nav{left:12px;right:12px;bottom:12px;align-items:flex-end}
+      .teaser-links,.teaser-controls{gap:6px;flex-wrap:wrap}
+      .teaser-action,.teaser-link,.sound-toggle{min-height:32px;padding:8px 10px;font-size:9px}
     }
   </style>
 </head>
 <body>
   <main class="frame" aria-label="MIT Pro V2 product teaser">
-    <button id="soundToggle" class="sound-toggle" type="button">Muted</button>
+    <nav class="teaser-nav" aria-label="Teaser navigation and playback controls">
+      <div class="teaser-links">
+        <a class="teaser-link" href="index.html">Home</a>
+        <a class="teaser-link" href="contact.html">Contact</a>
+      </div>
+      <div class="teaser-controls" aria-label="Playback controls">
+        <button id="playTeaser" class="teaser-action primary" type="button">Play</button>
+        <button id="stopTeaser" class="teaser-action danger" type="button">Stop</button>
+        <button id="soundToggle" class="sound-toggle teaser-action" type="button">Muted</button>
+      </div>
+    </nav>
     <audio id="cinematicScore" src="assets/cinematic-score.mp3" preload="auto"></audio>
     <div class="glow"></div>
     <div class="grid"></div>
@@ -916,6 +1004,8 @@
   </main>
   <script>
     const btn = document.getElementById("soundToggle");
+    const playBtn = document.getElementById("playTeaser");
+    const stopBtn = document.getElementById("stopTeaser");
     const score = document.getElementById("cinematicScore");
     const frame = document.querySelector(".frame");
     let audioCtx, master, muted = true, usingFileScore = false, beatTimers = [];
@@ -937,6 +1027,7 @@
       return audioCtx;
     }
     function restartVisuals(){
+      frame.classList.remove("is-stopped");
       const animated = document.querySelectorAll(animatedSelectors);
       animated.forEach(el=>{ el.style.animation = "none"; });
       void document.body.offsetHeight;
@@ -1112,6 +1203,16 @@
       clearBeatCues();
       if(master) master.gain.setTargetAtTime(0, audioCtx.currentTime, .08);
     }
+    function playTeaser(){
+      frame.classList.remove("is-stopped");
+      startSound();
+    }
+    function stopTeaser(){
+      stopSound();
+      frame.classList.add("is-stopped");
+    }
+    playBtn.addEventListener("click",playTeaser);
+    stopBtn.addEventListener("click",stopTeaser);
     btn.addEventListener("click",()=> muted ? startSound() : stopSound());
     if(score){
       score.addEventListener("ended",()=>{
