@@ -46,6 +46,22 @@ function normalizeCountry(value) {
     ae: "UAE",
     uae: "UAE",
     unitedarabemirates: "UAE",
+    ca: "Canada",
+    canada: "Canada",
+    au: "Australia",
+    australia: "Australia",
+    pk: "Pakistan",
+    pakistan: "Pakistan",
+    bd: "Bangladesh",
+    bangladesh: "Bangladesh",
+    lk: "Sri Lanka",
+    srilanka: "Sri Lanka",
+    sg: "Singapore",
+    singapore: "Singapore",
+    my: "Malaysia",
+    malaysia: "Malaysia",
+    ph: "Philippines",
+    philippines: "Philippines",
   };
   return map[compact] || raw;
 }
@@ -450,6 +466,38 @@ function countryRowsForActiveProfiles(profileRows, userByEmail, activityEmails =
   }).filter((row) => row.key);
 }
 
+function websiteField(row, key) {
+  const metadata = meta(row);
+  return row?.[key] ?? metadata?.[key] ?? "";
+}
+
+function websiteRows(rows) {
+  return (rows || []).filter((row) => String(row.event_type || "").toUpperCase() === "WEBSITE_VISIT");
+}
+
+function uniqueWebsiteVisitors(rows) {
+  const ids = new Set();
+  for (const row of rows || []) {
+    const id = String(row.device_id || row.session_id || websiteField(row, "visitor_hash") || row.ip_address || "").trim();
+    if (id) ids.add(id);
+  }
+  return ids.size;
+}
+
+function websiteCountBy(rows, key) {
+  const out = {};
+  for (const row of rows || []) {
+    let value = key === "country" ? normalizeCountry(row.country || websiteField(row, "country")) : websiteField(row, key);
+    if (key === "page") value = String(value || "/").split("?")[0] || "/";
+    value = String(value || "UNKNOWN").trim();
+    if (!value) value = "UNKNOWN";
+    out[value] = (out[value] || 0) + 1;
+  }
+  return Object.entries(out)
+    .map(([key, count]) => ({ key, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "Method not allowed." });
   const user = getSessionUser(req);
@@ -488,6 +536,8 @@ module.exports = async function handler(req, res) {
     enrichedRecentActivity.filter((row) => isToday(row.event_time || row.created_at)),
   ).filter((row) => row.key !== "UNKNOWN");
   const activeUsers = activeUserRows(enrichedRecentActivity);
+  const siteVisits = websiteRows(enrichedRecentActivity);
+  const siteVisitsToday = siteVisits.filter((row) => isToday(row.event_time || row.created_at));
   const strategyPerformance = strategyPerformanceRows(lifecycle);
   const brokerEvidenceRows = latestBrokerEvidence([...enrichedRecentActivity, ...lifecycle]);
   const profileActiveCountries = countBy(countryRowsForActiveProfiles(profileUsers, userByEmail, activityEmailsToday), "key").filter((row) => row.key !== "UNKNOWN");
@@ -504,6 +554,9 @@ module.exports = async function handler(req, res) {
       signal_results_available: resultMerge.available,
       heartbeat_records: heartbeats.length,
       login_records: logins.length,
+      website_visits_today: siteVisitsToday.length,
+      website_unique_visitors_today: uniqueWebsiteVisitors(siteVisitsToday),
+      website_total_visits_reviewed: siteVisits.length,
       backfilled_records: backfilled.length,
       active_users_today: activeUsers.length || uniqueCount(activeToday, "user_id") || profileActiveToday(profileUsers, activityEmailsToday).length,
       unique_users: uniqueCount(enrichedRecentActivity, "user_id"),
@@ -530,6 +583,21 @@ module.exports = async function handler(req, res) {
     strategies: strategyPerformance.strategies,
     pair_session_matrix: strategyPerformance.matrix,
     user_activity: countBy(enrichedRecentActivity, "event_type"),
+    website: {
+      visits_today: siteVisitsToday.length,
+      unique_visitors_today: uniqueWebsiteVisitors(siteVisitsToday),
+      total_visits_reviewed: siteVisits.length,
+      countries_today: websiteCountBy(siteVisitsToday, "country").filter((row) => row.key !== "UNKNOWN"),
+      pages_today: websiteCountBy(siteVisitsToday, "page").slice(0, 12),
+      recent: siteVisits.slice(0, 80).map((row) => ({
+        page: websiteField(row, "page") || "/",
+        country: normalizeCountry(row.country || websiteField(row, "country")) || "Country pending",
+        city: websiteField(row, "city") || "",
+        region: websiteField(row, "region") || "",
+        timezone: websiteField(row, "timezone") || "",
+        event_time: row.event_time || row.created_at || "",
+      })),
+    },
     active_countries: activeCountryRows.length
       ? activeCountryRows
       : (activityCountryRows.length ? activityCountryRows : (profileActiveCountries.length ? profileActiveCountries : licenseActiveCountries)),
