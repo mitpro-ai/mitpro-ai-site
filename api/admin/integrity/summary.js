@@ -332,6 +332,7 @@ function activeUserRows(rows) {
   const latest = new Map();
   for (const row of rows || []) {
     if (!isToday(row?.event_time || row?.created_at)) continue;
+    if (String(row?.event_type || "").toUpperCase() === "WEBSITE_VISIT") continue;
     const metadata = meta(row);
     const email = emailKey(field(row, "user_id") || field(row, "email") || field(row, "user_email"));
     const device = String(field(row, "device_id") || "").trim();
@@ -370,6 +371,7 @@ function isServiceIdentity(value) {
     "server",
     "localhost",
     "system",
+    "website_visitor",
     "mitpro_server",
     "mitpro-local-server",
   ].includes(key);
