@@ -169,6 +169,16 @@ function withinDays(row, days) {
   return Number.isFinite(time) && time >= Date.now() - (Number(days) * 86400000);
 }
 
+function isTodayRow(row) {
+  const time = Date.parse(eventTime(row));
+  if (!Number.isFinite(time)) return false;
+  const now = new Date();
+  const event = new Date(time);
+  return event.getUTCFullYear() === now.getUTCFullYear()
+    && event.getUTCMonth() === now.getUTCMonth()
+    && event.getUTCDate() === now.getUTCDate();
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "Method not allowed." });
   const user = getSessionUser(req);
@@ -204,6 +214,7 @@ module.exports = async function handler(req, res) {
     .sort((a, b) => Date.parse(eventTime(b) || 0) - Date.parse(eventTime(a) || 0));
 
   const sessions = summarizeSessions(allRows);
+  const todaySessions = summarizeSessions(allRows.filter(isTodayRow));
   const lifecycleCounts = {};
   const resultCounts = {};
   const eventCounts = {};
@@ -267,6 +278,10 @@ module.exports = async function handler(req, res) {
       records: allRows.length,
       sessions: sessions.rows.length,
       total_time: sessions.total_label,
+      today_time: todaySessions.total_label,
+      today_active_time: todaySessions.active_label,
+      today_idle_time: todaySessions.idle_label,
+      today_sessions: todaySessions.rows.length,
       active_time: sessions.active_label,
       idle_time: sessions.idle_label,
       logins: logins.length,
