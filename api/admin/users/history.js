@@ -186,7 +186,9 @@ module.exports = async function handler(req, res) {
 
   const email = emailKey(req.query?.email);
   if (!email || !email.includes("@")) return sendJson(res, 400, { ok: false, error: "User email is required." });
-  const days = Math.max(0, Math.min(365, Number(req.query?.days || 30) || 30));
+  const rawDays = String(req.query?.days || "30").toUpperCase();
+  const todayOnly = rawDays === "TODAY";
+  const days = todayOnly ? 1 : Math.max(1, Math.min(365, Number(req.query?.days || 30) || 30));
   const filter = String(req.query?.filter || "ALL").toUpperCase();
 
   const [activityRows, lifecycleRows, resultRows, userRows, licenseRows, deviceRows, agreementRows] = await Promise.all([
@@ -210,7 +212,7 @@ module.exports = async function handler(req, res) {
     return candidates.includes(email);
   };
   const allRows = uniqueRows([...activityRows, ...lifecycleRows.filter(emailMatches), ...resultRows.filter(emailMatches)])
-    .filter((row) => withinDays(row, days))
+    .filter((row) => todayOnly ? isTodayRow(row) : withinDays(row, days))
     .sort((a, b) => Date.parse(eventTime(b) || 0) - Date.parse(eventTime(a) || 0));
 
   const sessions = summarizeSessions(allRows);
@@ -268,7 +270,7 @@ module.exports = async function handler(req, res) {
   return sendJson(res, 200, {
     ok: true,
     email,
-    days,
+    days: todayOnly ? "TODAY" : days,
     filter,
     profile: userRows[0] || null,
     licenses: licenseRows,
