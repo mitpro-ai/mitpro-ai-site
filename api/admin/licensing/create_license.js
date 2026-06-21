@@ -37,6 +37,21 @@ function normalizeLicenseType(value) {
   return type === "TRIAL" ? "TRIAL" : "PAID";
 }
 
+function normalizeProductScope(value) {
+  const scope = String(value || "DESKTOP").trim().toUpperCase().replace(/[\s:-]+/g, "_");
+  if (["DESKTOP", "MOBILE", "DESKTOP_MOBILE"].includes(scope)) return scope;
+  if (["BUNDLE", "DESKTOP_PLUS_MOBILE", "DESKTOP_AND_MOBILE"].includes(scope)) return "DESKTOP_MOBILE";
+  return "DESKTOP";
+}
+
+function productScopeLabel(scope) {
+  return ({
+    DESKTOP: "Desktop",
+    MOBILE: "Mobile",
+    DESKTOP_MOBILE: "Desktop + Mobile",
+  }[normalizeProductScope(scope)] || "Desktop");
+}
+
 function makeLicenseKey(planCode, licenseType = "PAID") {
   const prefix = licenseType === "TRIAL" ? `TRIAL-${planCode}` : planCode;
   return `MITPRO-${prefix}-${crypto.randomBytes(3).toString("hex").toUpperCase()}-${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
@@ -102,6 +117,7 @@ module.exports = async function handler(req, res) {
 
   const licenseType = normalizeLicenseType(body.license_type || (String(body.plan_code || "").trim().toUpperCase() === "TRIAL" ? "TRIAL" : "PAID"));
   const planCode = normalizeAccessPlan(body.trial_category || body.access_plan || body.plan_code || "PRO", "PRO");
+  const productScope = normalizeProductScope(body.product_scope || body.product_access || body.scope);
   if (!["BASIC", "PRO", "ELITE"].includes(planCode)) {
     return sendJson(res, 400, { ok: false, error: "Access category must be Guardian, Commander, or Supreme." });
   }
@@ -136,6 +152,8 @@ module.exports = async function handler(req, res) {
   const licenseNote = [
     String(body.justification || body.reason || "Created from Partner Portal").trim(),
     `License type: ${licenseType}`,
+    `Product access: ${productScopeLabel(productScope)}`,
+    `Product scope: ${productScope}`,
     licenseType === "TRIAL" ? `Trial category: ${planName(planCode)}` : `Access category: ${planName(planCode)}`,
     `Customer: ${customerName || email}`,
     `Phone: ${phone}`,
@@ -167,6 +185,8 @@ module.exports = async function handler(req, res) {
     status: "active",
     details: {
       license_type: licenseType,
+      product_scope: productScope,
+      product_access: productScopeLabel(productScope),
       access_category: planName(planCode),
       plan_code: planCode,
       valid_days: validDays,
@@ -184,6 +204,8 @@ module.exports = async function handler(req, res) {
     email,
     license_key: licenseKey,
     plan_code: planCode,
+    product_scope: productScope,
+    product_access: productScopeLabel(productScope),
     license_type: licenseType,
     access_category: planName(planCode),
     expiry_date: expiryDate,
