@@ -644,6 +644,7 @@ module.exports = async function handler(req, res) {
         city: websiteField(row, "city") || "",
         region: websiteField(row, "region") || "",
         timezone: websiteField(row, "timezone") || "",
+        ip_address: row.ip_address || websiteField(row, "ip_address") || "",
         event_time: row.event_time || row.created_at || "",
       })),
     },
