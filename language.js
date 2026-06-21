@@ -3209,6 +3209,120 @@
     "USDT reference reviewed safely": "تمت مراجعة مرجع USDT بأمان"
   });
 
+  Object.assign(translations.hi, {
+    "Mobile": "मोबाइल",
+    "Adaptive Market Intelligence and Human-Centered Protection are now available for selected early users, with MIT Pro Mobile early access opening as part of the ecosystem.": "एडैप्टिव मार्केट इंटेलिजेंस और मानव-केंद्रित सुरक्षा अब चुने हुए शुरुआती उपयोगकर्ताओं के लिए उपलब्ध हैं, और MIT Pro Mobile अर्ली एक्सेस भी इसी इकोसिस्टम का हिस्सा बन रहा है।",
+    "Explore Mobile": "मोबाइल देखें",
+    "MIT PRO Mobile Early Access": "MIT PRO मोबाइल अर्ली एक्सेस",
+    "MIT Pro, Now Built For Mobile Awareness": "MIT Pro, अब मोबाइल जागरूकता के लिए भी बनाया गया",
+    "MIT Pro Mobile brings the awareness layer, protection context, and review mindset into a compact experience for users who cannot stay at the desktop terminal all day.": "MIT Pro Mobile जागरूकता लेयर, सुरक्षा संदर्भ और समीक्षा सोच को उन उपयोगकर्ताओं के लिए कॉम्पैक्ट अनुभव में लाता है जो पूरे दिन डेस्कटॉप टर्मिनल पर नहीं रह सकते।",
+    "Mobile Ribbon": "मोबाइल रिबन",
+    "Compact awareness for smaller screens.": "छोटी स्क्रीन के लिए कॉम्पैक्ट जागरूकता।",
+    "Protection Context": "सुरक्षा संदर्भ",
+    "ARJUN remains visible before action.": "कार्रवाई से पहले ARJUN संदर्भ दिखाई देता रहता है।",
+    "ZEUS + ASTRA Review": "ZEUS + ASTRA समीक्षा",
+    "Market reading and learning support stay connected.": "मार्केट रीडिंग और लर्निंग सपोर्ट जुड़े रहते हैं।",
+    "Reserve Mobile Access": "मोबाइल एक्सेस रिजर्व करें",
+    "Preview Mobile Page": "मोबाइल पेज देखें",
+    "Mobile Access Preview": "मोबाइल एक्सेस प्रीव्यू",
+    "Mobile ribbon preview for selected early users.": "चुने हुए शुरुआती उपयोगकर्ताओं के लिए मोबाइल रिबन प्रीव्यू।"
+  });
+
+  Object.assign(translations.es, {
+    "Mobile": "Móvil",
+    "Adaptive Market Intelligence and Human-Centered Protection are now available for selected early users, with MIT Pro Mobile early access opening as part of the ecosystem.": "Adaptive Market Intelligence y Human-Centered Protection ya están disponibles para usuarios iniciales seleccionados, con acceso anticipado a MIT Pro Mobile abriéndose como parte del ecosistema.",
+    "Explore Mobile": "Explorar móvil",
+    "MIT PRO Mobile Early Access": "Acceso anticipado a MIT PRO Mobile",
+    "MIT Pro, Now Built For Mobile Awareness": "MIT Pro, ahora creado para conciencia móvil",
+    "MIT Pro Mobile brings the awareness layer, protection context, and review mindset into a compact experience for users who cannot stay at the desktop terminal all day.": "MIT Pro Mobile lleva la capa de conciencia, el contexto de protección y la mentalidad de revisión a una experiencia compacta para usuarios que no pueden estar todo el día en el terminal de escritorio.",
+    "Mobile Ribbon": "Cinta móvil",
+    "Compact awareness for smaller screens.": "Conciencia compacta para pantallas pequeñas.",
+    "Protection Context": "Contexto de protección",
+    "ARJUN remains visible before action.": "ARJUN permanece visible antes de la acción.",
+    "ZEUS + ASTRA Review": "Revisión ZEUS + ASTRA",
+    "Market reading and learning support stay connected.": "La lectura del mercado y el soporte de aprendizaje permanecen conectados.",
+    "Reserve Mobile Access": "Reservar acceso móvil",
+    "Preview Mobile Page": "Vista previa móvil",
+    "Mobile Access Preview": "Vista previa de acceso móvil",
+    "Mobile ribbon preview for selected early users.": "Vista previa de la cinta móvil para usuarios iniciales seleccionados."
+  });
+
+  Object.assign(translations.fr, {
+    "Mobile": "Mobile",
+    "Adaptive Market Intelligence and Human-Centered Protection are now available for selected early users, with MIT Pro Mobile early access opening as part of the ecosystem.": "Adaptive Market Intelligence et Human-Centered Protection sont maintenant disponibles pour certains premiers utilisateurs, avec l'accès anticipé à MIT Pro Mobile qui s'ouvre dans l'écosystème.",
+    "Explore Mobile": "Explorer mobile",
+    "MIT PRO Mobile Early Access": "Accès anticipé à MIT PRO Mobile",
+    "MIT Pro, Now Built For Mobile Awareness": "MIT Pro, maintenant conçu pour la conscience mobile",
+    "MIT Pro Mobile brings the awareness layer, protection context, and review mindset into a compact experience for users who cannot stay at the desktop terminal all day.": "MIT Pro Mobile apporte la couche de conscience, le contexte de protection et l'esprit de revue dans une expérience compacte pour les utilisateurs qui ne peuvent pas rester toute la journée sur le terminal de bureau.",
+    "Mobile Ribbon": "Ruban mobile",
+    "Compact awareness for smaller screens.": "Conscience compacte pour les petits écrans.",
+    "Protection Context": "Contexte de protection",
+    "ARJUN remains visible before action.": "ARJUN reste visible avant l'action.",
+    "ZEUS + ASTRA Review": "Revue ZEUS + ASTRA",
+    "Market reading and learning support stay connected.": "La lecture du marché et le support d'apprentissage restent connectés.",
+    "Reserve Mobile Access": "Réserver l'accès mobile",
+    "Preview Mobile Page": "Aperçu de la page mobile",
+    "Mobile Access Preview": "Aperçu accès mobile",
+    "Mobile ribbon preview for selected early users.": "Aperçu du ruban mobile pour certains premiers utilisateurs."
+  });
+
+  Object.assign(translations.tr, {
+    "Mobile": "Mobil",
+    "Adaptive Market Intelligence and Human-Centered Protection are now available for selected early users, with MIT Pro Mobile early access opening as part of the ecosystem.": "Adaptive Market Intelligence ve Human-Centered Protection artık seçili erken kullanıcılar için hazır; MIT Pro Mobile erken erişimi de ekosistemin parçası olarak açılıyor.",
+    "Explore Mobile": "Mobil'i keşfet",
+    "MIT PRO Mobile Early Access": "MIT PRO Mobile Erken Erişim",
+    "MIT Pro, Now Built For Mobile Awareness": "MIT Pro, artık mobil farkındalık için de tasarlandı",
+    "MIT Pro Mobile brings the awareness layer, protection context, and review mindset into a compact experience for users who cannot stay at the desktop terminal all day.": "MIT Pro Mobile, tüm gün masaüstü terminalinde kalamayan kullanıcılar için farkındalık katmanını, koruma bağlamını ve inceleme yaklaşımını kompakt bir deneyime taşır.",
+    "Mobile Ribbon": "Mobil şerit",
+    "Compact awareness for smaller screens.": "Küçük ekranlar için kompakt farkındalık.",
+    "Protection Context": "Koruma bağlamı",
+    "ARJUN remains visible before action.": "ARJUN işlemden önce görünür kalır.",
+    "ZEUS + ASTRA Review": "ZEUS + ASTRA inceleme",
+    "Market reading and learning support stay connected.": "Piyasa okuması ve öğrenme desteği bağlantılı kalır.",
+    "Reserve Mobile Access": "Mobil erişimi ayır",
+    "Preview Mobile Page": "Mobil sayfayı önizle",
+    "Mobile Access Preview": "Mobil erişim önizlemesi",
+    "Mobile ribbon preview for selected early users.": "Seçili erken kullanıcılar için mobil şerit önizlemesi."
+  });
+
+  Object.assign(translations.ar, {
+    "Mobile": "الجوال",
+    "Adaptive Market Intelligence and Human-Centered Protection are now available for selected early users, with MIT Pro Mobile early access opening as part of the ecosystem.": "أصبحت Adaptive Market Intelligence وHuman-Centered Protection متاحتين الآن لمستخدمين مبكرين محددين، مع فتح الوصول المبكر إلى MIT Pro Mobile كجزء من المنظومة.",
+    "Explore Mobile": "استكشف الجوال",
+    "MIT PRO Mobile Early Access": "الوصول المبكر إلى MIT PRO Mobile",
+    "MIT Pro, Now Built For Mobile Awareness": "MIT Pro، مصمم الآن لوعي الجوال",
+    "MIT Pro Mobile brings the awareness layer, protection context, and review mindset into a compact experience for users who cannot stay at the desktop terminal all day.": "ينقل MIT Pro Mobile طبقة الوعي وسياق الحماية ومنهجية المراجعة إلى تجربة مدمجة للمستخدمين الذين لا يستطيعون البقاء على محطة سطح المكتب طوال اليوم.",
+    "Mobile Ribbon": "شريط الجوال",
+    "Compact awareness for smaller screens.": "وعي مدمج للشاشات الصغيرة.",
+    "Protection Context": "سياق الحماية",
+    "ARJUN remains visible before action.": "يبقى ARJUN مرئيا قبل أي إجراء.",
+    "ZEUS + ASTRA Review": "مراجعة ZEUS + ASTRA",
+    "Market reading and learning support stay connected.": "تبقى قراءة السوق ودعم التعلم متصلين.",
+    "Reserve Mobile Access": "احجز وصول الجوال",
+    "Preview Mobile Page": "معاينة صفحة الجوال",
+    "Mobile Access Preview": "معاينة وصول الجوال",
+    "Mobile ribbon preview for selected early users.": "معاينة شريط الجوال لمستخدمين مبكرين محددين."
+  });
+
+  Object.assign(translations.ur, {
+    "Mobile": "موبائل",
+    "Adaptive Market Intelligence and Human-Centered Protection are now available for selected early users, with MIT Pro Mobile early access opening as part of the ecosystem.": "Adaptive Market Intelligence اور Human-Centered Protection اب منتخب ابتدائی صارفین کے لیے دستیاب ہیں، اور MIT Pro Mobile early access بھی اسی ecosystem کا حصہ بن رہا ہے۔",
+    "Explore Mobile": "موبائل دیکھیں",
+    "MIT PRO Mobile Early Access": "MIT PRO موبائل ابتدائی رسائی",
+    "MIT Pro, Now Built For Mobile Awareness": "MIT Pro، اب موبائل آگاہی کے لیے بھی بنایا گیا",
+    "MIT Pro Mobile brings the awareness layer, protection context, and review mindset into a compact experience for users who cannot stay at the desktop terminal all day.": "MIT Pro Mobile awareness layer، protection context، اور review mindset کو ان صارفین کے لیے compact experience میں لاتا ہے جو سارا دن desktop terminal پر نہیں رہ سکتے۔",
+    "Mobile Ribbon": "موبائل ربن",
+    "Compact awareness for smaller screens.": "چھوٹی اسکرینز کے لیے compact awareness۔",
+    "Protection Context": "پروٹیکشن context",
+    "ARJUN remains visible before action.": "ایکشن سے پہلے ARJUN visible رہتا ہے۔",
+    "ZEUS + ASTRA Review": "ZEUS + ASTRA review",
+    "Market reading and learning support stay connected.": "Market reading اور learning support connected رہتے ہیں۔",
+    "Reserve Mobile Access": "موبائل access reserve کریں",
+    "Preview Mobile Page": "موبائل page preview کریں",
+    "Mobile Access Preview": "موبائل access preview",
+    "Mobile ribbon preview for selected early users.": "منتخب ابتدائی صارفین کے لیے موبائل ribbon preview۔"
+  });
+
   const originals = new WeakMap();
   const ignoredTags = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "SVG", "PATH", "SYMBOL"]);
   const translationNoticeText = "AI-assisted translation notice: Non-English content is provided for convenience using AI-assisted translation. The English version remains the official reference for MIT Pro terms, privacy, risk, and product information.";
@@ -3238,6 +3352,7 @@
         const parent = node.parentElement;
         if (!parent || ignoredTags.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
         if (parent.closest(".language-switch")) return NodeFilter.FILTER_REJECT;
+        if (parent.closest(".mobile-page main")) return NodeFilter.FILTER_REJECT;
         if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
