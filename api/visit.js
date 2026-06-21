@@ -8,7 +8,14 @@ function cloudConfig() {
 }
 
 function clientIp(req) {
-  return String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "")
+  return String(
+    req.headers["x-forwarded-for"] ||
+      req.headers["x-vercel-forwarded-for"] ||
+      req.headers["cf-connecting-ip"] ||
+      req.headers["x-real-ip"] ||
+      req.socket?.remoteAddress ||
+      "",
+  )
     .split(",")[0]
     .trim()
     .slice(0, 80);
@@ -28,6 +35,9 @@ function countryFromHeaders(req) {
     req.headers["x-vercel-ip-country"] ||
     req.headers["cf-ipcountry"] ||
     req.headers["x-country"] ||
+    req.headers["x-appengine-country"] ||
+    req.headers["cloudfront-viewer-country"] ||
+    req.headers["x-geo-country"] ||
     "",
     40,
   );

@@ -62,6 +62,22 @@ function normalizeCountry(value) {
     malaysia: "Malaysia",
     ph: "Philippines",
     philippines: "Philippines",
+    tr: "Turkey",
+    turkey: "Turkey",
+    qa: "Qatar",
+    qatar: "Qatar",
+    kw: "Kuwait",
+    kuwait: "Kuwait",
+    bh: "Bahrain",
+    bahrain: "Bahrain",
+    om: "Oman",
+    oman: "Oman",
+    np: "Nepal",
+    nepal: "Nepal",
+    ng: "Nigeria",
+    nigeria: "Nigeria",
+    za: "South Africa",
+    southafrica: "South Africa",
   };
   return map[compact] || raw;
 }
@@ -70,6 +86,7 @@ function countryFromTimezone(value) {
   const tz = String(value || "").trim().toLowerCase();
   const map = {
     "asia/riyadh": "Saudi Arabia",
+    "asia/karachi": "Pakistan",
     "asia/kolkata": "India",
     "asia/calcutta": "India",
     "asia/dubai": "UAE",
@@ -82,6 +99,25 @@ function countryFromTimezone(value) {
   if (map[tz]) return map[tz];
   if (tz.startsWith("america/")) return "USA";
   return "";
+}
+
+function countryFromMetadata(metadata) {
+  const direct = normalizeCountry(
+    metadata?.server_country
+      || metadata?.country_name
+      || metadata?.country
+      || metadata?.geo_country
+      || metadata?.request_country
+      || "",
+  );
+  if (direct) return direct;
+  return normalizeCountry(
+    metadata?.server_country_code
+      || metadata?.country_code
+      || metadata?.cf_country
+      || metadata?.geo_country_code
+      || "",
+  );
 }
 
 function countBy(rows, key) {
@@ -416,6 +452,17 @@ function countryFromUser(user) {
 function withProfileCountry(rows, userByEmail) {
   return (rows || []).map((row) => {
     if (field(row, "country")) return row;
+    const serverCountry = countryFromMetadata(meta(row));
+    if (serverCountry) {
+      return {
+        ...row,
+        country: serverCountry,
+        metadata_json: {
+          ...meta(row),
+          country_source: "server_evidence",
+        },
+      };
+    }
     const metadataCountry = countryFromTimezone(meta(row).time_zone || meta(row).timeZone || meta(row).timezone);
     if (metadataCountry) {
       return {

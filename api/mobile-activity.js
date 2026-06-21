@@ -32,6 +32,8 @@ function countryFromHeaders(req) {
       req.headers["cf-ipcountry"] ||
       req.headers["x-country"] ||
       req.headers["x-appengine-country"] ||
+      req.headers["cloudfront-viewer-country"] ||
+      req.headers["x-geo-country"] ||
       "",
     40,
   );
