@@ -585,6 +585,7 @@ module.exports = async function handler(req, res) {
     enrichedRecentActivity.filter((row) => isToday(row.event_time || row.created_at)),
   ).filter((row) => row.key !== "UNKNOWN");
   const activeUsers = activeUserRows(enrichedRecentActivity);
+  const liveActiveCountryRows = countUniqueByCountry(activeUsers).filter((row) => row.key !== "UNKNOWN");
   const siteVisits = websiteRows(enrichedRecentActivity);
   const siteVisitsToday = siteVisits.filter((row) => isToday(row.event_time || row.created_at));
   const strategyPerformance = strategyPerformanceRows(lifecycle);
@@ -607,7 +608,7 @@ module.exports = async function handler(req, res) {
       website_unique_visitors_today: uniqueWebsiteVisitors(siteVisitsToday),
       website_total_visits_reviewed: siteVisits.length,
       backfilled_records: backfilled.length,
-      active_users_today: activeUsers.length || uniqueCount(activeToday, "user_id") || profileActiveToday(profileUsers, activityEmailsToday).length,
+      active_users_today: activeUsers.length,
       unique_users: uniqueCount(enrichedRecentActivity, "user_id"),
       unique_devices: uniqueCount(enrichedRecentActivity, "device_id"),
       unique_sessions: uniqueCount(enrichedRecentActivity, "session_id"),
@@ -648,12 +649,11 @@ module.exports = async function handler(req, res) {
         event_time: row.event_time || row.created_at || "",
       })),
     },
-    active_countries: activeCountryRows.length
-      ? activeCountryRows
-      : (activityCountryRows.length ? activityCountryRows : (profileActiveCountries.length ? profileActiveCountries : licenseActiveCountries)),
+    active_countries: liveActiveCountryRows,
     active_country_debug: {
       activity_emails_today: activityEmailsToday.size,
       heartbeat_country_rows: activeCountryRows.length,
+      live_active_country_rows: liveActiveCountryRows.length,
       activity_country_rows: activityCountryRows.length,
       profile_country_rows: profileActiveCountries.length,
       license_country_rows: licenseActiveCountries.length,
