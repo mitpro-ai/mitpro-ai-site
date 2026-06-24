@@ -179,6 +179,30 @@ function isTodayRow(row) {
     && event.getUTCDate() === now.getUTCDate();
 }
 
+function cleanDate(value) {
+  const text = String(value || "").trim().slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : "";
+}
+
+function dateWindow(startDate, endDate) {
+  let start = cleanDate(startDate);
+  let end = cleanDate(endDate);
+  if (start && end && start > end) [start, end] = [end, start];
+  if (start && !end) end = start;
+  if (end && !start) start = end;
+  if (!start || !end) return null;
+  const startMs = Date.parse(`${start}T00:00:00.000Z`);
+  const endMs = Date.parse(`${end}T23:59:59.999Z`);
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) return null;
+  return { start, end, startMs, endMs };
+}
+
+function withinDateWindow(row, window) {
+  if (!window) return true;
+  const time = Date.parse(eventTime(row));
+  return Number.isFinite(time) && time >= window.startMs && time <= window.endMs;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") return sendJson(res, 405, { ok: false, error: "Method not allowed." });
   const user = getSessionUser(req);
@@ -190,6 +214,7 @@ module.exports = async function handler(req, res) {
   const todayOnly = rawDays === "TODAY";
   const days = todayOnly ? 1 : Math.max(1, Math.min(365, Number(req.query?.days || 30) || 30));
   const filter = String(req.query?.filter || "ALL").toUpperCase();
+  const selectedWindow = dateWindow(req.query?.start_date, req.query?.end_date);
 
   const [activityRows, lifecycleRows, resultRows, userRows, licenseRows, deviceRows, agreementRows] = await Promise.all([
     supabaseRows("user_activity_logs", `select=*&user_id=eq.${encodeURIComponent(email)}&order=event_time.desc&limit=5000`),
@@ -212,7 +237,7 @@ module.exports = async function handler(req, res) {
     return candidates.includes(email);
   };
   const allRows = uniqueRows([...activityRows, ...lifecycleRows.filter(emailMatches), ...resultRows.filter(emailMatches)])
-    .filter((row) => todayOnly ? isTodayRow(row) : withinDays(row, days))
+    .filter((row) => selectedWindow ? withinDateWindow(row, selectedWindow) : todayOnly ? isTodayRow(row) : withinDays(row, days))
     .sort((a, b) => Date.parse(eventTime(b) || 0) - Date.parse(eventTime(a) || 0));
 
   const sessions = summarizeSessions(allRows);
@@ -271,6 +296,8 @@ module.exports = async function handler(req, res) {
     ok: true,
     email,
     days: todayOnly ? "TODAY" : days,
+    start_date: selectedWindow?.start || "",
+    end_date: selectedWindow?.end || "",
     filter,
     profile: userRows[0] || null,
     licenses: licenseRows,

@@ -77,17 +77,17 @@ function publicItem(row) {
   const meta = row?.metadata_json && typeof row.metadata_json === "object" ? row.metadata_json : {};
   return {
     id: row.id || meta.id || "",
-    pair: meta.pair || "",
-    strategy: meta.strategy || "",
-    direction: meta.direction || "",
-    session: meta.session || "",
-    market_mode: meta.market_mode || "",
-    open_price: meta.open_price || "",
-    close_price: meta.close_price || "",
-    result: meta.result || "",
-    notes: meta.notes || "",
-    created_by: meta.created_by || row.user_id || "",
-    created_at: row.event_time || row.created_at || "",
+    pair: row.pair || meta.pair || "",
+    strategy: row.strategy || meta.strategy || "",
+    direction: row.direction || meta.direction || "",
+    session: row.market_session || meta.session || "",
+    market_mode: row.market_mode || meta.market_mode || "",
+    open_price: row.open_price || meta.open_price || "",
+    close_price: row.close_price || meta.close_price || "",
+    result: row.captured_result || meta.result || "",
+    notes: row.correction_notes || meta.notes || "",
+    created_by: row.corrected_by || meta.created_by || row.user_id || "",
+    created_at: row.corrected_at || row.validation_time || row.event_time || row.created_at || "",
   };
 }
 
@@ -98,6 +98,14 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method === "GET") {
+    const auditRows = await supabaseRows("validated_trade_audit", query({
+      select: "*",
+      source: "eq.manual_recovery",
+      order: "validation_time.desc",
+      limit: "300",
+    }));
+    if (auditRows.length) return sendJson(res, 200, { ok: true, items: auditRows.map(publicItem), source: "validated_trade_audit" });
+
     const rows = await supabaseRows("user_activity_logs", query({
       select: "*",
       event_type: "eq.MANUAL_VALIDATION_RESULT",
@@ -153,7 +161,53 @@ module.exports = async function handler(req, res) {
     };
 
     const rows = await supabaseRequest("POST", "user_activity_logs", payload);
-    return sendJson(res, 200, { ok: true, item: publicItem(rows[0] || payload), message: "Manual validation recovery saved." });
+    let auditSaved = false;
+    let auditRow = null;
+    try {
+      const tradeId = clean(body.trade_id, 120) || `${pair}-${now}-${normalizeEmail(user.email) || "manual"}`;
+      const auditRows = await supabaseRequest("POST", "validated_trade_audit", {
+        trade_id: tradeId,
+        validation_time: now,
+        utc_time: now.replace("T", " ").slice(0, 19) + " UTC",
+        user_id: normalizeEmail(user.email) || "manual_validation_admin",
+        session_id: `manual_validation_${Date.now()}`,
+        device_id: "partner_manual_validation",
+        platform: "PARTNER_PORTAL",
+        ip_address: clientIp(req),
+        country: countryFromHeaders(req),
+        pair,
+        market_session: session,
+        market_mode: marketMode,
+        broker_mode: clean(body.broker_mode, 30).toUpperCase() || "MANUAL",
+        direction,
+        strategy,
+        open_price: openPrice,
+        open_price_source: "MANUAL_PRICE_CONFIRMATION",
+        close_price: closePrice,
+        close_price_source: "MANUAL_PRICE_CONFIRMATION",
+        captured_result: result,
+        result_source: "MANUAL_PRICE_CONFIRMATION",
+        result_rule: "ADMIN_CONFIRMED_OPEN_CLOSE",
+        status: result === "WORKED" ? "CAPTURED_WORKED" : result === "WEAK" ? "CAPTURED_WEAK" : result === "REFUND" ? "CAPTURED_REFUND" : "NEEDS_REVIEW",
+        missing_reason: "Manual recovery confirmed by admin",
+        source: "manual_recovery",
+        source_activity_id: rows[0]?.id || null,
+        source_metadata: payload.metadata_json,
+        corrected_by: normalizeEmail(user.email),
+        corrected_at: now,
+        correction_notes: notes,
+      });
+      auditSaved = true;
+      auditRow = auditRows[0] || null;
+    } catch {
+      auditSaved = false;
+    }
+    return sendJson(res, 200, {
+      ok: true,
+      item: publicItem(auditRow || rows[0] || payload),
+      audit_saved: auditSaved,
+      message: auditSaved ? "Manual validation recovery saved to audit table." : "Manual validation recovery saved. Audit table is not applied yet.",
+    });
   } catch (error) {
     return sendJson(res, 500, { ok: false, error: error.message || "Manual validation save failed." });
   }

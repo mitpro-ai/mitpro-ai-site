@@ -1,4 +1,9 @@
+const fs = require("fs");
+const path = require("path");
+
 const { getSessionUser, sendJson, supabaseRows } = require("../../_lib/partner-data");
+
+const REAL_MARKET_RECOVERIES_FILE = path.resolve(__dirname, "../../../../live_v2/data/real_market_price_recoveries.json");
 
 function meta(row) {
   const value = row?.metadata_json || row?.metadata || {};
@@ -11,6 +16,117 @@ function field(row, key) {
   const lifecycleContext = lifecycleRow?.integrity_context || {};
   const value = row?.[key] ?? metadata?.[key] ?? lifecycleRow?.[key] ?? lifecycleContext?.[key] ?? metadata?.integrity_context?.[key] ?? "";
   return key === "country" ? normalizeCountry(value) : value;
+}
+
+function loadRealMarketRecoveries() {
+  try {
+    const raw = fs.readFileSync(REAL_MARKET_RECOVERIES_FILE, "utf8");
+    const data = JSON.parse(raw);
+    return data && typeof data.records === "object" ? data.records : {};
+  } catch {
+    return {};
+  }
+}
+
+function hasPriceValue(value) {
+  return value !== undefined && value !== null && String(value).trim() !== "";
+}
+
+function isBrokerSource(value) {
+  return String(value || "").toUpperCase().includes("BROKER");
+}
+
+function isRealValidationLifecycle(row) {
+  const tradeId = String(field(row, "trade_id") || "").trim();
+  const pair = String(field(row, "pair") || "").trim().toUpperCase();
+  const marketMode = String(field(row, "market_mode") || "").trim().toUpperCase();
+  const lifecycle = String(field(row, "final_lifecycle") || field(row, "lifecycle") || "").trim().toUpperCase();
+  const entryType = String(field(row, "entry_type") || "").trim().toUpperCase();
+  if (!tradeId || !pair || pair.includes("OTC")) return false;
+  if (!(marketMode.includes("REAL") || !marketMode)) return false;
+  return lifecycle.includes("VALIDATION") || entryType === "MOBILE_VALIDATION";
+}
+
+function overlayRecoveredAuditRow(row, recovery) {
+  if (!row || !recovery) return row;
+  const out = { ...row };
+  const openMissing = !hasPriceValue(out.open_price) && !isBrokerSource(out.open_price_source);
+  const closeMissing = !hasPriceValue(out.close_price) && !isBrokerSource(out.close_price_source);
+
+  if (openMissing) {
+    if (hasPriceValue(recovery.open_price)) out.open_price = recovery.open_price;
+    if (hasPriceValue(recovery.open_price_source)) out.open_price_source = recovery.open_price_source;
+    if (hasPriceValue(recovery.open_price_clock)) out.open_price_clock = recovery.open_price_clock;
+    if (hasPriceValue(recovery.open_price_confidence)) out.open_price_confidence = recovery.open_price_confidence;
+    if (hasPriceValue(recovery.open_price_crop_path)) out.open_price_crop_path = recovery.open_price_crop_path;
+  }
+  if (closeMissing) {
+    if (hasPriceValue(recovery.close_price)) out.close_price = recovery.close_price;
+    if (hasPriceValue(recovery.close_price_source)) out.close_price_source = recovery.close_price_source;
+    if (hasPriceValue(recovery.close_price_clock)) out.close_price_clock = recovery.close_price_clock;
+    if (hasPriceValue(recovery.close_price_confidence)) out.close_price_confidence = recovery.close_price_confidence;
+    if (hasPriceValue(recovery.close_price_crop_path)) out.close_price_crop_path = recovery.close_price_crop_path;
+  }
+  if (openMissing || closeMissing) {
+    if (hasPriceValue(recovery.result_source)) out.result_source = recovery.result_source;
+    if (hasPriceValue(recovery.recovery_type)) out.recovery_type = recovery.recovery_type;
+    if (hasPriceValue(recovery.recovery_note)) out.recovery_note = recovery.recovery_note;
+    if (hasPriceValue(recovery.recovery_source_url)) out.recovery_source_url = recovery.recovery_source_url;
+    if (hasPriceValue(recovery.entry_utc)) out.entry_utc = recovery.entry_utc;
+    if (hasPriceValue(recovery.expiry_utc)) out.expiry_utc = recovery.expiry_utc;
+    if (hasPriceValue(recovery.expiry_minutes)) out.expiry_minutes = recovery.expiry_minutes;
+    out.market_data_recovered = String(recovery.recovery_type || "").toUpperCase() === "MARKET_DATA_RECOVERED";
+  }
+  return out;
+}
+
+function recoveredAuditRowFromLifecycle(row, recovery) {
+  const validationTime = field(row, "validation_time") || row?.event_time || row?.created_at || field(row, "created_at_utc") || "";
+  return overlayRecoveredAuditRow({
+    trade_id: field(row, "trade_id"),
+    validation_time: validationTime,
+    utc_time: validationTime ? `${String(validationTime).replace("T", " ").slice(0, 19)} UTC` : "",
+    user_id: field(row, "user_id") || field(row, "email") || field(row, "user_email") || row?.user_id || "",
+    session_id: field(row, "session_id") || row?.session_id || "",
+    device_id: field(row, "device_id") || row?.device_id || "",
+    platform: field(row, "platform") || "",
+    ip_address: field(row, "ip_address") || row?.ip_address || "",
+    country: field(row, "country") || row?.country || "",
+    pair: field(row, "pair"),
+    market_session: field(row, "session") || field(row, "market_session") || "",
+    market_mode: field(row, "market_mode") || "REAL",
+    broker_mode: field(row, "broker_mode") || field(row, "broker_account_mode") || "UNKNOWN",
+    direction: field(row, "direction") || field(row, "type") || "",
+    strategy: field(row, "strategy") || field(row, "entry_type") || "",
+    captured_result: field(row, "captured_result") || field(row, "result_quality") || field(row, "result") || "",
+    result_source: field(row, "result_source") || "",
+    result_rule: field(row, "result_rule") || "",
+    status: field(row, "status") || "MISSING_RESULT",
+    missing_reason: field(row, "missing_reason") || "Recovered market-data evidence attached to validation lifecycle row.",
+    source: "real_market_recovery_overlay",
+  }, recovery);
+}
+
+function withRecoveredValidationAudit(validatedTradeAudit, lifecycleRows) {
+  const recoveries = loadRealMarketRecoveries();
+  if (!Object.keys(recoveries).length) return validatedTradeAudit || [];
+
+  const seen = new Set();
+  const auditRows = (validatedTradeAudit || []).map((row) => {
+    const tradeId = String(row?.trade_id || "").trim();
+    if (tradeId) seen.add(tradeId);
+    return overlayRecoveredAuditRow(row, recoveries[tradeId]);
+  });
+
+  for (const row of lifecycleRows || []) {
+    if (!isRealValidationLifecycle(row)) continue;
+    const tradeId = String(field(row, "trade_id") || "").trim();
+    if (!tradeId || seen.has(tradeId) || !recoveries[tradeId]) continue;
+    auditRows.push(recoveredAuditRowFromLifecycle(row, recoveries[tradeId]));
+    seen.add(tradeId);
+  }
+
+  return auditRows.sort((a, b) => Date.parse(b?.validation_time || "") - Date.parse(a?.validation_time || ""));
 }
 
 function normalizeCountry(value) {
@@ -552,10 +668,11 @@ module.exports = async function handler(req, res) {
   const user = getSessionUser(req);
   if (!user) return sendJson(res, 401, { ok: false, error: "Login required." });
 
-  const [recentActivity, lifecycleActivity, signalResultActivity, profileUsers, licenseProfiles] = await Promise.all([
+  const [recentActivity, lifecycleActivity, signalResultActivity, validatedTradeAudit, profileUsers, licenseProfiles] = await Promise.all([
     supabaseRows("user_activity_logs", "select=*&order=event_time.desc&limit=1000"),
     supabaseRows("user_activity_logs", "select=*&event_type=eq.MARKET_LIFECYCLE&order=event_time.desc&limit=5000"),
     supabaseRows("user_activity_logs", "select=*&event_type=eq.SIGNAL_RESULT&order=event_time.desc&limit=5000"),
+    supabaseRows("validated_trade_audit", "select=*&order=validation_time.desc&limit=5000"),
     supabaseRows("users", "select=*&limit=1000"),
     supabaseRows("user_licenses", "select=*&limit=1000"),
   ]);
@@ -566,6 +683,7 @@ module.exports = async function handler(req, res) {
     .filter((row) => String(row.event_type || "").toUpperCase() === "MARKET_LIFECYCLE");
   const resultMerge = mergeSignalResultsIntoLifecycle(rawLifecycle, signalResultActivity);
   const lifecycle = resultMerge.rows;
+  const recoveredValidationAudit = withRecoveredValidationAudit(validatedTradeAudit, lifecycle);
   const heartbeats = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "HEARTBEAT");
   const logins = recentActivity.filter((row) => String(row.event_type || "").toUpperCase() === "LOGIN");
   const backfilled = recentActivity.filter((row) => meta(row)._backfill);
@@ -599,6 +717,7 @@ module.exports = async function handler(req, res) {
       overall_state: "Normal",
       records_reviewed: enrichedRecentActivity.length,
       lifecycle_records: lifecycle.length,
+      validation_audit_records: recoveredValidationAudit.length,
       signal_result_records: signalResultActivity.length,
       signal_results_matched: resultMerge.matched,
       signal_results_available: resultMerge.available,
@@ -624,6 +743,7 @@ module.exports = async function handler(req, res) {
     recent_activity: enrichedRecentActivity.slice(0, 250),
     active_users: activeUsers,
     lifecycle,
+    validation_audit: recoveredValidationAudit,
     heartbeats: heartbeats.slice(0, 250),
     logins: logins.slice(0, 100),
     results: countBy(lifecycle, "result_quality"),
